@@ -38,3 +38,6 @@
 # scripts
 
 
+# npx nodemon <appfilename>.js
+
+#Routing
