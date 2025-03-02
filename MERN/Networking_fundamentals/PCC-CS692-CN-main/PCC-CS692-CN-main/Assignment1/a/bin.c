@@ -1,3 +1,7 @@
+/**
+ * @file sender.c
+ * @brief Implementation of a message sending system using System V message queues.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,31 +11,11 @@
 
 #define MESSAGE_KEY 2832
 #define PERMISSIONS 0666
-#define END_MESSAGE "end"
 
 struct message_struct {
   long int message_type;
   char message_body[BUFSIZ];
 };
-
-void process_messages(int msgid) {
-  struct message_struct message;
-  int running = 1;
-
-  while (running) {
-    if (msgrcv(msgid, (void *)&message, BUFSIZ, 1, 0) == -1) {
-      perror("msgrcv failed");
-      exit(EXIT_FAILURE);
-    }
-
-    if (strcmp(message.message_body, END_MESSAGE) == 0) {
-      running = 0;
-      printf("\nProcess Terminated...\n");
-    } else {
-      printf("%s\n", message.message_body);
-    }
-  }
-}
 
 int main() {
   int msgid = msgget((key_t)MESSAGE_KEY, PERMISSIONS | IPC_CREAT);
@@ -40,7 +24,29 @@ int main() {
     exit(EXIT_FAILURE);
   }
 
-  process_messages(msgid);
+  struct message_struct message;
+  message.message_type = 1;
+
+  while(1) {
+    printf("Enter message (type 'end' to quit): ");
+    fgets(message.message_body, BUFSIZ, stdin);
+    
+    // Remove trailing newline
+    size_t len = strlen(message.message_body);
+    if (len > 0 && message.message_body[len-1] == '\n') {
+      message.message_body[len-1] = '\0';
+    }
+
+    // Send the message
+    if (msgsnd(msgid, (void *)&message, BUFSIZ, 0) == -1) {
+      perror("msgsnd failed");
+      exit(EXIT_FAILURE);
+    }
+
+    if (strcmp(message.message_body, "end") == 0) {
+      break;
+    }
+  }
 
   return 0;
 }
