@@ -1,56 +1,85 @@
-#include <stdio.h>                 // Include standard input/output library for functions like printf
-#include <stdlib.h>                // Include standard library for functions like rand and srand              
-#include <string.h>                // Include string manipulation functions
+// Standard input/output functions (printf, scanf, etc.)
+#include <stdio.h>                 
+// Standard library functions (memory allocation, random numbers, etc.)
+#include <stdlib.h>                
+// String manipulation functions
+#include <string.h>                
+// Time functions for random seed
+#include <time.h>                  
+// Boolean data type support
+#include <stdbool.h>               
 
-#include <time.h>                 // Include time library for random number generation
-#include <stdbool.h>               // Include boolean data type (true/false)
+// Total number of frames to be sent
+#define TOTAL_FRAMES 10            
+// Size of the sliding window
+#define WINDOW_SIZE 4              
 
-#define TOTAL_FRAMES 10            // Define a constant for total number of frames (10)
-#define WINDOW_SIZE 4  
-
+// Function to display frames being sent in current window
 void send_frames(int start , int window_size){
-    printf("Sending Frames:");     // Print message indicating frames are being sent
+    // Print header for frame sending
+    printf("Sending Frames:");     
+    // Loop through frames in current window
     for(int i = start; i < start + window_size && i < TOTAL_FRAMES; i++) {
-        printf("[%d]", i);     // Print the frame number in brackets
+        // Display each frame number
+        printf("[%d]", i);         
     }
-    printf("\n");                  // Print a newline after listing the frames
+    // New line after frame list
+    printf("\n");                  
 }
-// Function to simulate whether an acknowledgment is lost during transmission
+
+// Function to simulate random ACK loss
 bool isACKLost(){
-      return rand() % 10 < 3;        // Return true (ACK lost) 30% of the time, false 70% of the time 
+    // 30% chance of ACK loss (returns true if random number is 0, 1, or 2)
+    return rand() % 10 < 3;        
 }
 
 int main(){
-    srand(time(NULL));             // Initialize random number generator with current time as seed
-    bool received[TOTAL_FRAMES] = { false }; // Create array to track which frames have been acknowledged, all initially false
-    int base = 0;                  // Start with the first frame (index 0)
+    // Initialize random number generator with current time
+    srand(time(NULL));             
+    // Array to track received acknowledgments
+    bool received[TOTAL_FRAMES] = { false }; 
+    // Starting position of the window
+    int base = 0;                  
     
-    while (base < TOTAL_FRAMES) {  // Continue until all frames have been sent and acknowledged
-        send_frames(base, WINDOW_SIZE); // Display the frames in the current window
+    // Continue until all frames are sent and acknowledged
+    while (base < TOTAL_FRAMES) {  
+        // Show current window of frames
+        send_frames(base, WINDOW_SIZE); 
         int i;
-        // Process each frame in the current window
-        for ( i = base; i < base + WINDOW_SIZE && i < TOTAL_FRAMES; i++) { 
-            printf("Waiting for ACK of Frame %d \n", (i+1)); // Display waiting message (note: frame numbers shown to user are 1-based)
-            if (isACKLost()) {     // If the acknowledgment is lost
-                printf("ACK lost for Frame %d! \n", (i+1)); // Inform that ACK was lost
+        // Process each frame in current window
+        for (i = base; i < base + WINDOW_SIZE && i < TOTAL_FRAMES; i++) { 
+            // Show waiting message for current frame
+            printf("Waiting for ACK of Frame %d \n", (i+1)); 
+            
+            // Check if ACK is lost
+            if (isACKLost()) {     
+                // Display ACK loss message
+                printf("ACK lost for Frame %d! \n", (i+1)); 
+                // Show resending message
                 printf("Resending from Frame:%d \n",i);
-                break;     // Print message indicating frames are being resent
+                // Exit loop to resend frames
+                break;             
             }
-            else {                 // If the acknowledgment is received successfully
-                printf("ACK received for Frame %d \n", (i+1)); // Inform that ACK was received
-                received[i] = true; // Mark this frame as acknowledged
+            else {                 
+                // Show successful ACK message
+                printf("ACK received for Frame %d \n", (i+1)); 
+                // Mark frame as acknowledged
+                received[i] = true; 
             }
         }
         
-        // Move the window forward past all acknowledged frames
-       if (i == base + WINDOW_SIZE || i == TOTAL_FRAMES) {
-           base += WINDOW_SIZE; // Move the base to the next window
+        // Window movement logic
+        if (i == base + WINDOW_SIZE || i == TOTAL_FRAMES) {
+            // Move window by full window size if all ACKs received
+            base += WINDOW_SIZE; 
         }
         else{
-            base = i; // Move the base to the last unacknowledged frame
+            // Move window to last unacknowledged frame
+            base = i; 
         }
     }
     
-    printf("All frames sent and acknowledged successfully!\n"); // Display completion message
+    // Final success message
+    printf("All frames sent and acknowledged successfully!\n"); 
     return 0;
 }
