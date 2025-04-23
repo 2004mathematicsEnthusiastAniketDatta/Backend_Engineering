@@ -64,7 +64,8 @@ int main() {
     // The second arguement is a pointer to the message structure that will receive the message.
     // The third arguement is the size of the message to be received, and the fourth arguement is the message type to receive.
     // The fifth arguement is a flag that can be used to specify whether the message should be received immediately or if it should block until a message of the specified type is available.
-    // If the message is received successfully, msgrcv returns the size of the message received. If it fails, it returns -1.
+    // If the message is received successfully, msgrcv returns the    // If the message is received successfully, msgrcv returns the size of the message received. If it fails, it returns -1.
+    // size of the message received. If it fails, it returns -1.
     // The message type can be a specific value or 0 to receive any message.
         //msgtype == 0 means that the first message from the queue is removed and returned.
     //msgtype > 0 means that the first message from the queue with the mtype field equals to msgtype is removed 
