@@ -1,0 +1,200 @@
+hostname ATHENA
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+clock timezone utc 0 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1156628731
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1156628731
+ revocation-check none
+ rsakeypair TP-self-signed-1156628731
+!
+!
+crypto pki certificate chain TP-self-signed-1156628731
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 31313536 36323837 3331301E 170D3134 31313034 31353337
+  35375A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 31353636
+  32383733 31308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201
+  0A028201 0100F001 FA594B25 F3E9FFBB 7BB95B2C 0628C10C 16B2DC57 F7E16694
+  E6A8C7D3 CF4570E4 0A259D1F FD5593DB 79890672 959EB57C 3ECEC849 FE7FE5DF
+  9D298A6C 603E8DB6 5E856160 963D27AE 202509E2 5F5A68F9 46D4DC8E 81F393DD
+  FBCEF76C D459D7B7 6EEB7B90 4B6803F0 06810808 95E385B6 534C216F C3BF2BA4
+  BF1F2F3F 4C14E34D FDEE5C05 DC8FBFF5 A3F7D685 1293E24E E7593E61 BF763193
+  7FE39DEF 8D5D941F 8E8B44BD 79D805D6 9644467D B05609B6 96D86A19 95AEA72E
+  9B4D2F72 7CAFDCD6 CE6A8225 17603590 D65B0991 9D063B88 FCB7CB31 AE725145
+  4ADFCFCA 616F6EED BA79A290 752DDC06 34B6CECB 74BF9D9E F1B83460 854621AC
+  B2D9E266 97B30203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF
+  301F0603 551D2304 18301680 14A0957C B6807E0D AA470081 608D9B2D 7F673ECA
+  D2301D06 03551D0E 04160414 A0957CB6 807E0DAA 47008160 8D9B2D7F 673ECAD2
+  300D0609 2A864886 F70D0101 05050003 82010100 268E1653 2CE785D7 35B301E7
+  CADA1868 5755195E E196C9E5 1C849BE6 815C2704 2BD002B0 CD614DC1 9368B469
+  2638F754 8FF2C996 2AD28CA1 EB7038D7 CC526B87 A6A4F89F 46976B2B 56AF2AF0
+  1523CE18 0A97E974 37329A86 17D23A48 47BE0D22 5214FF79 1E6F0C1C CF2D9A67
+  97488332 B7B49006 16228EF0 4AF38B25 CC7D6592 901D8EA5 E36B98C3 37DA3CEA
+  E9F6B794 E9CC96A5 2DE72355 2CCC91C8 74FB5468 D58505A6 A3158FAF 001C05B2
+  27901D9F B8A8C244 1E12239B 08350A99 7BF40B43 2303B618 30A9E410 B5CF11E4
+  1646552A 212A06C8 725BD8D9 A59B1268 469C163D 8F91F4FC 6CB6BC28 A20CDDC8
+  531348CE 0B245B8A 47A047EE 5C7338E3 88749BC3
+        quit
+!
+!
+license udi pid ISR4321/K9 sn FDO230513F3
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto isakmp policy 1
+ encr 3des
+ hash sha256
+ authentication pre-share
+crypto isakmp key cisco address 100.3.53.1
+!
+!
+crypto ipsec transform-set vpn esp-3des esp-sha256-hmac
+ mode tunnel
+!
+!
+!
+crypto map vpn 1 ipsec-isakmp
+ set peer 100.3.53.1
+ set transform-set vpn
+ match address vpn
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 8.8.8.8 255.255.255.255
+!
+interface Loopback1
+ ip address 192.168.0.1 255.255.255.0
+!
+interface GigabitEthernet0/0/0
+ ip address 208.67.220.2 255.255.255.252
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ ip address 208.67.222.2 255.255.255.252
+ negotiation auto
+ crypto map vpn
+!
+interface Serial0/1/0
+ no ip address
+ shutdown
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0/1
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0/0
+!
+!
+!
+ip access-list extended vpn
+ permit ip 192.168.0.0 0.0.0.255 10.0.0.0 0.0.0.255
+ip sla 1
+ icmp-echo 13.40.50.2 source-interface GigabitEthernet0/0/1
+ frequency 10
+ip sla schedule 1 life forever start-time now
+ip sla 2
+ icmp-echo 14.133.250.2 source-interface GigabitEthernet0/0/0
+ frequency 10
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+ntp source Loopback0
+ntp master 1
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end

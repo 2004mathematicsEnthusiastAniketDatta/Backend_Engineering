@@ -1,0 +1,318 @@
+hostname D4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$ZInU$WP1pGNkiFK7ny27JdAnwk/
+!
+no aaa new-model
+switch 1 provision ws-c3650-24ts
+!
+!
+!
+!
+!
+ip routing
+!
+ip dhcp excluded-address 10.1.11.0 10.1.11.120
+ip dhcp excluded-address 10.1.11.255
+ip dhcp excluded-address 10.1.21.0 10.1.21.120
+ip dhcp excluded-address 10.1.21.255
+ip dhcp excluded-address 10.1.31.0 10.1.31.120
+ip dhcp excluded-address 10.1.31.255
+ip dhcp excluded-address 10.1.41.0 10.1.41.120
+ip dhcp excluded-address 10.1.41.255
+!
+ip dhcp pool vlan100
+ network 10.1.11.0 255.255.255.0
+ default-router 10.1.11.1
+ dns-server 8.8.8.8
+ lease 0 4
+!
+ip dhcp pool vlan200
+ network 10.1.21.0 255.255.255.0
+ default-router 10.1.21.1
+ dns-server 8.8.8.8
+ lease 0 4
+!
+ip dhcp pool vlan300
+ network 10.1.31.0 255.255.255.0
+ default-router 10.1.31.1
+ dns-server 8.8.8.8
+ lease 0 4
+!
+ip dhcp pool vlan400
+ network 10.1.41.0 255.255.255.0
+ default-router 10.1.41.1
+ dns-server 8.8.8.8
+ lease 0 4
+!
+!
+qos queue-softmax-multiplier 100
+vtp domain qwer
+vtp mode transparent
+!
+crypto pki trustpoint TP-self-signed-3149207265
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3149207265
+ revocation-check none
+ rsakeypair TP-self-signed-3149207265
+!
+!
+crypto pki certificate chain TP-self-signed-3149207265
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 33313439 32303732 3635301E 170D3134 31313133 31353330
+  32305A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 31343932
+  30373236 3530819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281
+  8100903F 141DC440 74D1D68D 8B722998 06584744 A844A28C C56CB4E0 71CB5CB5
+  2B5FBBA4 03FD2353 6FACC520 28A252D8 AD872C9F D30E3D3F 0EDD05BC DA882265
+  8AAB9B3B 57FC8ECF 205C42F9 E7757D83 552F190A 6D28ADAB 5FEBC3FA 13F89826
+  E045616A EE3EC999 817C0B2F B9E22ABB 582A014A 7B6304EC E3D74290 9734D27B
+  7AD70203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603
+  551D2304 18301680 14EDE561 A714B8F0 2F442615 9A1CE31D F71C9C14 C4301D06
+  03551D0E 04160414 EDE561A7 14B8F02F 4426159A 1CE31DF7 1C9C14C4 300D0609
+  2A864886 F70D0101 05050003 8181003E DD2B8A84 956C00A4 4EC4A9F0 C9C5E810
+  2EBBDD73 B496E3DD E260369A A9A29C21 EFC511DE B0E1EFBA 3AA0DF42 586F144F
+  E1816528 53E02183 84D3EB12 ADE0E781 07DD929D 8F04848D 0DD04353 3F41474F
+  7DDDB99D 71D5E153 295B017B 0FE6345F 253C5DC1 A4951ED2 C4875410 AC2004E8
+  BFFDC7F8 69AA0441 AA4A61F5 FF5387
+        quit
+diagnostic bootup level minimal
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 99,300,400 priority 28672
+spanning-tree vlan 100,200 priority 20480
+hw-switch switch 1 logging onboard message level 3
+!
+redundancy
+ mode sso
+!
+!
+vlan 99
+ name MANAGEMENT
+!
+vlan 100
+ name SERVERS
+!
+vlan 200
+ name VOICE
+!
+vlan 300
+ name O-PEER
+!
+vlan 400
+!
+!
+class-map match-any non-client-nrt-class
+!
+policy-map port_child_policy
+ class non-client-nrt-class
+  bandwidth remaining ratio 10
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ description Link To A4
+ switchport trunk native vlan 99
+ switchport mode trunk
+!
+interface Port-channel2
+ description Link To A3
+ switchport trunk native vlan 99
+ switchport mode trunk
+!
+interface Port-channel3
+ switchport mode trunk
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.1.99.104 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1/0/1
+ switchport trunk native vlan 99
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 1 mode passive
+ spanning-tree guard root
+!
+interface GigabitEthernet1/0/2
+ switchport trunk native vlan 99
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 1 mode passive
+ spanning-tree guard root
+!
+interface GigabitEthernet1/0/3
+ switchport trunk native vlan 99
+ switchport mode trunk
+ channel-protocol lacp
+ channel-group 2 mode passive
+ spanning-tree guard root
+!
+interface GigabitEthernet1/0/4
+ switchport trunk native vlan 99
+ switchport mode trunk
+ speed 1000
+ channel-protocol lacp
+ channel-group 2 mode passive
+ spanning-tree guard root
+!
+interface GigabitEthernet1/0/5
+ switchport mode trunk
+ speed 1000
+ channel-group 3 mode passive
+!
+interface GigabitEthernet1/0/6
+!
+interface GigabitEthernet1/0/7
+!
+interface GigabitEthernet1/0/8
+!
+interface GigabitEthernet1/0/9
+!
+interface GigabitEthernet1/0/10
+!
+interface GigabitEthernet1/0/11
+!
+interface GigabitEthernet1/0/12
+!
+interface GigabitEthernet1/0/13
+ no switchport
+ ip address 10.1.50.30 255.255.255.252
+!
+interface GigabitEthernet1/0/14
+ no switchport
+ ip address 10.1.50.46 255.255.255.252
+!
+interface GigabitEthernet1/0/15
+!
+interface GigabitEthernet1/0/16
+!
+interface GigabitEthernet1/0/17
+!
+interface GigabitEthernet1/0/18
+!
+interface GigabitEthernet1/0/19
+!
+interface GigabitEthernet1/0/20
+!
+interface GigabitEthernet1/0/21
+!
+interface GigabitEthernet1/0/22
+!
+interface GigabitEthernet1/0/23
+!
+interface GigabitEthernet1/0/24
+!
+interface GigabitEthernet1/1/1
+!
+interface GigabitEthernet1/1/2
+!
+interface GigabitEthernet1/1/3
+!
+interface GigabitEthernet1/1/4
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan99
+ ip address 10.1.99.5 255.255.255.0
+ standby 99 ip 10.1.99.1
+ standby 99 preempt
+!
+interface Vlan100
+ ip address 10.1.11.3 255.255.255.0
+ standby 11 ip 10.1.11.1
+ standby 11 preempt
+!
+interface Vlan200
+ ip address 10.1.21.3 255.255.255.0
+ standby 21 ip 10.1.21.1
+ standby 21 preempt
+!
+interface Vlan300
+ ip address 10.1.31.3 255.255.255.0
+ standby 31 ip 10.1.31.1
+ standby 31 preempt
+!
+interface Vlan400
+ ip address 10.1.41.3 255.255.255.0
+ standby 41 ip 10.1.41.1
+ standby 41 preempt
+!
+!
+router eigrp 100
+ network 10.1.0.0 0.0.255.255
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ password cisco
+ login
+line vty 5 15
+ login
+!
+wsma agent exec
+ profile httplistener
+ profile httpslistener
+!
+wsma agent config
+ profile httplistener
+ profile httpslistener
+!
+wsma agent filesys
+ profile httplistener
+ profile httpslistener
+!
+wsma agent notify
+ profile httplistener
+ profile httpslistener
+!
+!
+wsma profile listener httplistener
+ transport http
+!
+wsma profile listener httpslistener
+ transport https
+!
+ap group default-group
+end

@@ -1,0 +1,200 @@
+RB2#show run
+Building configuration...
+
+
+Current configuration : 4269 bytes
+!
+! Last configuration change at 15:35:33 UTC Wed Jun 12 2019
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname RB2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2136219941
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2136219941
+ revocation-check none
+ rsakeypair TP-self-signed-2136219941
+!
+!
+crypto pki certificate chain TP-self-signed-2136219941
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 32313336 32313939 3431301E 170D3139 30363130 31363131
+  30335A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 31333632
+  31393934 31308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201
+  0A028201 0100CA72 25C479A6 6DED95C0 6C5F5EE2 0F7C20BD F15E5F86 7DFAC5ED
+  1A68CE08 42E89409 5B8EF80B 5EE50069 7EDE10C0 4D4BB2BA 8326FE2C A322FAA5
+  56C30A55 3C8872C4 EBDD7D89 77F335BB E5480EA4 B7424D3C 94B9D836 EA786DB7
+  1CEBE668 D755ABA6 616F2F02 254C2D89 5D84E79A 5108CE8B 9542C160 6947E619
+  972653ED 5B38A1B2 2B6B3785 303D93E9 624BD7EE 50EC55B9 A635A4C3 0B8C54C2
+  1F5A2EA2 8415451E F3D75CB2 096BAC3D EFA0FA1D BA5847D6 35744389 5BF45778
+  4CACB194 B92FE15E ED528813 4C8544A3 5F74E644 21DBB4BF 693AD0E2 A62EDAB2
+  55EA7202 9D1AA162 25288151 216AC0FF AB0EE81D F240B836 D3934064 93B14685
+  18456579 35870203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF
+  301F0603 551D2304 18301680 1419DE36 C818CAC4 405C7291 9B69404C 9A9CCB5D
+  63301D06 03551D0E 04160414 19DE36C8 18CAC440 5C72919B 69404C9A 9CCB5D63
+  300D0609 2A864886 F70D0101 05050003 82010100 41B3F481 835F1C2C BF3A833E
+  629C90C2 BDF55E04 3673D4C7 4FC4833D FF88A6A8 044FE88B 62642100 3C0A311C
+  AD8CEEC3 796C9E3B 8BF993A2 55156CE1 A369E930 5683586E B9E62E1A CF01A3AE
+  80377593 FFE56CE6 3B645722 6A9BA4F4 9B1F6449 E1D9CBB7 1F48221D B58035E6
+  8AFC1383 E18E07C6 A1265B11 C26869BB E22E8928 31611513 2E8A0093 FC8DC347
+  5A48F4F3 5E09B284 FFA77556 F772CF17 1F18CDAC CBC784B9 8B26B753 10626BF3
+  DB909040 5A0E2F45 AE610C7A 612236E4 E70B23A5 428F98CC 7BFB7071 F161C0F6
+  EB51A280 A89C199A AAD048E5 35F24A16 D86E5176 26A4554A 407E7DD5 31F185BE
+  2B1DAA7E 51377660 B538A994 6980D762 C176BB15
+        quit
+!
+!
+license udi pid ISR4321/K9 sn FDO230512HA
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ ip address 172.16.2.2 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/0/1.12
+ encapsulation dot1Q 12
+ ip address 12.35.20.2 255.255.255.252
+!
+interface GigabitEthernet0/0/1.23
+ encapsulation dot1Q 23
+ ip address 23.5.3.1 255.255.255.252
+!
+interface GigabitEthernet0/0/1.24
+ encapsulation dot1Q 24
+ ip address 24.170.30.1 255.255.255.252
+!
+interface Serial0/1/0
+ no ip address
+ shutdown
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 65002
+ bgp log-neighbor-changes
+ network 12.35.20.0 mask 255.255.255.252
+ network 23.5.3.0 mask 255.255.255.252
+ network 24.170.30.0 mask 255.255.255.252
+ network 172.16.2.0 mask 255.255.255.252
+ neighbor 12.35.20.1 remote-as 65001
+ neighbor 23.5.3.2 remote-as 65003
+ neighbor 24.170.30.2 remote-as 65004
+ neighbor 172.16.2.1 remote-as 65002
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end

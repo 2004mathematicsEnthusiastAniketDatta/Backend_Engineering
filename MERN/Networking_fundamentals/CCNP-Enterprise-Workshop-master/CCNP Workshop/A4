@@ -1,0 +1,354 @@
+hostname A4
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$UUXY$GQx7S9CsHwESQVfrZuhks0
+!
+username admin password 7 05080F1C2243
+no aaa new-model
+system mtu routing 1500
+!
+!
+!
+!
+!
+ip arp inspection vlan 100,200,300,400
+!
+!
+ip dhcp snooping vlan 100,200,300,400
+ip dhcp snooping
+ip domain-name cisco.com
+!
+!
+crypto pki trustpoint TP-self-signed-905753856
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-905753856
+ revocation-check none
+ rsakeypair TP-self-signed-905753856
+!
+!
+crypto pki certificate chain TP-self-signed-905753856
+ certificate self-signed 01
+  30820229 30820192 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 39303537 35333835 36301E17 0D393330 33303130 30303035
+  385A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3930 35373533
+  38353630 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100
+  C0E2DC58 15AB5A91 CCAA3203 819DCD3C C467A84A B3E16651 1B9ACFB3 AC24700C
+  4A084AEC FCAF5A1E 82449B7C E8482275 18A8DBCE 1055834F E1FC375C 269DE3F6
+  0460F11E 6C4F7CD7 0E730942 2052B744 1ABF3919 3FEAB9C0 E3F2BB96 F3A78E8A
+  F0AD38D3 852043BA 8666F8D5 ED716C2A BA675684 50EF6119 A64BDAFF 963D7CD9
+  02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 0603551D
+  23041830 16801475 06F85AE7 14E5497A 73A6D56C 92DF92C6 1D645030 1D060355
+  1D0E0416 04147506 F85AE714 E5497A73 A6D56C92 DF92C61D 6450300D 06092A86
+  4886F70D 01010505 00038181 0034685A 6C8EF48F 61603004 94339D36 E1773EF4
+  BF17C998 09ABFA8F 1CDAC25C 96B56786 F3B71B19 4CF02C72 7C6B5593 F9A54D97
+  4628A3B3 B56BD397 D83833AB DF0936D9 F18FB757 90463A44 A50C8AF3 81E20F24
+  DAE9AB9C 6ACC0EEC ABBA9FE0 A0CF85E2 A5EDD8B0 6AD26432 CD014F60 DCF5D3CA
+  F0A5482C D2B92985 05AE2DC0 9C
+        quit
+errdisable recovery cause psecure-violation
+errdisable recovery interval 60
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ description Link To D4
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+!
+interface Port-channel2
+ description Link To D3
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+!
+interface FastEthernet0/1
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+ channel-group 1 mode active
+ spanning-tree guard loop
+ ip dhcp snooping trust
+!
+interface FastEthernet0/2
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+ channel-group 1 mode active
+ spanning-tree guard loop
+ ip dhcp snooping trust
+!
+interface FastEthernet0/3
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+ channel-group 2 mode active
+ spanning-tree guard loop
+ ip dhcp snooping trust
+!
+interface FastEthernet0/4
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 99,100,200,300,400
+ switchport mode trunk
+ switchport nonegotiate
+ ip arp inspection trust
+ channel-group 2 mode active
+ spanning-tree guard loop
+ ip dhcp snooping trust
+!
+interface FastEthernet0/5
+ switchport access vlan 100
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/6
+ switchport access vlan 100
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/7
+ switchport access vlan 200
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/8
+ switchport access vlan 200
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/9
+ switchport access vlan 300
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/10
+ switchport access vlan 300
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/11
+ switchport access vlan 400
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/12
+ switchport access vlan 400
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/13
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/14
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/15
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/16
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/17
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/18
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/19
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface FastEthernet0/20
+ shutdown
+ spanning-tree guard root
+!
+interface FastEthernet0/21
+ shutdown
+ spanning-tree guard root
+!
+interface FastEthernet0/22
+ shutdown
+ spanning-tree guard root
+!
+interface FastEthernet0/23
+ shutdown
+ spanning-tree guard root
+!
+interface FastEthernet0/24
+ shutdown
+ spanning-tree guard root
+!
+interface GigabitEthernet0/1
+ switchport access vlan 666
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation  protect
+ switchport port-security mac-address sticky
+ switchport port-security
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip verify source port-security
+!
+interface GigabitEthernet0/2
+ switchport access vlan 99
+ switchport mode access
+ spanning-tree portfast
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan99
+ ip address 10.1.99.14 255.255.255.0
+!
+ip default-gateway 10.1.99.1
+ip http server
+ip http secure-server
+!
+no vstack
+banner motd ^CUnauthorized access to this device is prohibited!^C
+!
+line con 0
+ password 7 121A0C041104
+line vty 0 4
+ password 7 121A0C041104
+ login local
+ transport input telnet ssh
+line vty 5 15
+ login
+!
+ntp server 8.8.8.8
+end

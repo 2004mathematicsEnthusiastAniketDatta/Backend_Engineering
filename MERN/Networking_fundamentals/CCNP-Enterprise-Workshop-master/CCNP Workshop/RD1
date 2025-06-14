@@ -1,0 +1,215 @@
+Current configuration : 4872 bytes
+!
+! Last configuration change at 21:06:19 UTC Mon Jun 10 2019
+! NVRAM config last updated at 21:02:09 UTC Mon Jun 10 2019
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname RD1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$MaWM$oqrA5ooTMMNGjz2/sU0uy/
+!
+no aaa new-model
+clock timezone UTC 1 0
+clock summer-time UTC recurring
+!
+no ip domain lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2900049221
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2900049221
+ revocation-check none
+ rsakeypair TP-self-signed-2900049221
+!
+!
+crypto pki certificate chain TP-self-signed-2900049221
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 32393030 30343932 3231301E 170D3134 31313131 31363030
+  34365A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 39303030
+  34393232 31308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201
+  0A028201 0100929C ECB08022 69F214E8 3097E5DD C43F85E4 DC6086E1 ECAE32C2
+  5FB62E14 808A2142 BC954DEE 9FD59DF0 683B60AD 8F683CAF 5ABDA514 D072DAC6
+  65611985 99224827 A598CD3D E4171C08 B3773817 2E1FAD91 1F4EACD1 AA17F651
+  1762E07E 0312A37B BB45A94F 63AA8666 6A53C442 D0C9E638 1A952C1C 4B1D4401
+  53838090 D7D1EA02 F525E4B1 12743892 FD5C7775 A4E624E3 F47DB5B5 A69E525A
+  C5A233F2 A917804F 269D0902 DF536713 1BAE0490 5EADB7ED 0E5AE9C1 C456FF6F
+  0D4A87EC 39CEF7E9 25EC7557 A608B39C 7B08B789 51B9FC74 1CC281B2 48B3A350
+  0EA6896A 3028F37B A515A098 173914D1 FE99ADEB E88DA05B 46E11523 47BDD8F4
+  D5CCE651 A4A50203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF
+  301F0603 551D2304 18301680 14464EED 2E9D6109 3DC5A07A B711B87B 03846E42
+  22301D06 03551D0E 04160414 464EED2E 9D61093D C5A07AB7 11B87B03 846E4222
+  300D0609 2A864886 F70D0101 05050003 82010100 1B0AB4E7 F01732E1 B4FCE178
+  B5C9CED7 6AC71C7A 7D861B6F 5A4253CD 239222A7 DC4DA649 F8B110D4 2D95D19D
+  8BDC129A 10DF49F2 735569C9 FBF73D68 AD40EAA2 0989BF4F 9D59738A CA98F551
+  E7D6461C F1DD585F 8002CB12 45E1F5E5 AD7C3B4B 465D8A77 78C20D99 82072C38
+  DC463F9A 3950C44D AE74000F B82B83C0 1BADF95A 7F776D88 E377D4B1 10C6FDB7
+  BD3F6625 BA52A0CF 43E691D3 D7C0438D 94DA01E5 694C3316 93DF4E27 A27BECDC
+  02BEDE33 5AEBB8C1 29624D52 DA186089 D3E14754 1FFBB369 30EF22C4 DB985EB3
+  BA346A16 2D59AAE5 274833CF 1CD667D2 B7F0FA38 A63A9B02 B7A0E41A 254ED174
+  3B66C183 43837FC9 8133FEC8 46C9CE21 86293F8C
+        quit
+!
+!
+license udi pid ISR4321/K9 sn FDO230512KT
+diagnostic bootup level minimal
+spanning-tree extend system-id
+archive
+ path ftp://admin:cisco123@10.1.2.3/$h.cfg
+ write-memory
+ time-period 60
+!
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ ip address 208.67.220.1 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/0/1.14
+ encapsulation dot1Q 14
+ ip address 14.133.250.2 255.255.255.252
+!
+interface GigabitEthernet0/0/1.24
+ encapsulation dot1Q 24
+ ip address 24.170.30.2 255.255.255.252
+!
+interface GigabitEthernet0/0/1.34
+ encapsulation dot1Q 34
+ ip address 34.34.34.1 255.255.255.252
+!
+interface Serial0/1/0
+ ip address 150.100.50.2 255.255.255.252
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 65004
+ bgp log-neighbor-changes
+ network 8.8.8.8 mask 255.255.255.255
+ network 14.133.250.0 mask 255.255.255.252
+ network 24.170.30.0 mask 255.255.255.252
+ network 34.34.34.0 mask 255.255.255.252
+ network 150.100.50.0 mask 255.255.255.252
+ network 208.67.220.0 mask 255.255.255.252
+ neighbor 14.133.250.1 remote-as 65001
+ neighbor 24.170.30.1 remote-as 65002
+ neighbor 34.34.34.2 remote-as 65003
+ neighbor 150.100.50.1 remote-as 65003
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0
+ip route 8.8.8.8 255.255.255.255 GigabitEthernet0/0/0
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ password 7 110A1016141D
+ logging synchronous
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ password 7 110A1016141D
+ login
+line vty 5 97
+ password 7 110A1016141D
+ login
+!
+ntp server 8.8.8.8 prefer
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end

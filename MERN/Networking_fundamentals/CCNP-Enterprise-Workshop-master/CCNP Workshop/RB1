@@ -1,0 +1,186 @@
+RB1#show run
+Building configuration...
+
+
+Current configuration : 3937 bytes
+!
+! Last configuration change at 15:59:15 UTC Wed Nov 19 2014
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname RB1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+!
+no ip domain lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-623637762
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-623637762
+ revocation-check none
+ rsakeypair TP-self-signed-623637762
+!
+!
+crypto pki certificate chain TP-self-signed-623637762
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 36323336 33373736 32301E17 0D313431 31313731 36333231
+  385A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3632 33363337
+  37363230 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02
+  82010100 F9C9CBB0 266F3084 6A020B41 4D9AAE27 A40F277A 93B04617 1732A9DE
+  01EF57FB 157EE3F9 930AEBE4 8CE8AF64 2047F4C2 4557E029 2F02476D 4B75D310
+  731D1265 D45F58BD 5687E0EF 0480A9D5 0A80688A 7F443E0A E81F9522 07CD220F
+  6CBDC381 627DAEB6 C8C2B6A4 420A63AD B8613966 97DEE96E 308A934C 90739691
+  AE29817A 670B0EAC 1465205C C21AC67C 2175889D BDC2CF1E DA05DBD5 69CF1F4F
+  443D13FA A6BA669E DB41C764 21D3908F 44021438 E2CBFB37 9084D18D F1FCE28B
+  9CF03B58 E8C0E90D 21DAEEF4 50F8640D 83CD1346 D67F18B1 5AA632D6 36748D50
+  CC7B6EC8 1B8D9547 5D372702 59229DA3 9AB6C04D D6FDB54F C44E68C3 65B1DADC
+  A3A30A49 02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F
+  0603551D 23041830 168014BF 7EF7F00C 8DB3E29D 10E92AED 2106C8DD 6E545530
+  1D060355 1D0E0416 0414BF7E F7F00C8D B3E29D10 E92AED21 06C8DD6E 5455300D
+  06092A86 4886F70D 01010505 00038201 01008C2E 6B3C7E31 8B9B9CDF BB363E77
+  12B8361C 7F8018B4 C4EAE96D 62C1C73A 5885C606 49EC32A8 A01234F2 1952AFF0
+  DCD247FF F944FCCE F30FAA20 29FEA9E4 A97D1931 4D1AC827 82EF7659 BAB59DC8
+  8422D009 14E4FDEC D450E329 7B6EB816 D3EFD9DC 1EADF8A1 4D4F6F4E F5C37734
+  8845E93E BA3B0470 6C6A77D5 D8E163A0 64F1D169 D9BB2744 91C9CCF9 4870EFCF
+  7266A1F1 AE84E89D 62CB34C9 0FFB3728 F0417950 52B9A502 5C765CE7 2CCFF45A
+  9B488CC5 98C7A365 4378DC3F 5CF28F6D EF4BA647 72977BB3 3E4CCDE2 B4BB88B0
+  5A627925 18B856FC AA0CA9AA 514AE661 501CAF79 33E7EFF6 A5C73B9F 340E4717
+  EBF6A950 E8CC22FF 4D44707B 3EB921AA 085F
+        quit
+!
+!
+license udi pid ISR4321/K9 sn FDO230512J0
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ ip address 172.16.2.1 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface Serial0/1/0
+ ip address 200.100.50.2 255.255.255.252
+!
+interface Serial0/1/1
+ ip address 100.3.53.2 255.255.255.252
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 65002
+ bgp log-neighbor-changes
+ network 100.3.53.0 mask 255.255.255.252
+ network 172.16.2.0 mask 255.255.255.252
+ network 200.100.50.0 mask 255.255.255.252
+ neighbor 172.16.2.2 remote-as 65002
+ neighbor 200.100.50.1 remote-as 65001
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end

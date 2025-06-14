@@ -1,0 +1,203 @@
+Current configuration : 4547 bytes
+!
+! Last configuration change at 20:44:10 utc Mon Jun 10 2019
+! NVRAM config last updated at 20:44:14 utc Mon Jun 10 2019
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname RC1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+clock timezone utc 2 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1267069190
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1267069190
+ revocation-check none
+ rsakeypair TP-self-signed-1267069190
+!
+!
+crypto pki certificate chain TP-self-signed-1267069190
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 31323637 30363931 3930301E 170D3134 31313034 31353234
+  32395A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 32363730
+  36393139 30308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201
+  0A028201 0100BA1E 9455A739 7E4CDBC0 A82D1F7B 2A1EF986 36F1E177 188187B2
+  203FA6D5 33E35712 F1AFB756 6BFE44F4 D028DF3E 3EE07C7A 0CCDF8D2 E85B3AB9
+  E7E19869 79D54D57 A7BF9461 B4D6C414 7A1DD2B7 0719F337 860FEFFD F84A1447
+  ABB4B381 121BB0BA 3D0D6767 93A41B3F 04107070 5D472ADA 0EA87A3C AB05F3C9
+  24B0E68D ACD9A3B8 C169FC0A 5F5CB610 6B4F57C1 B0673D0B 17E5F1B4 053380E1
+  AB364589 AADC23ED 14F71B26 0C9746DA FA443492 322B5DF1 38D874D3 06E242B3
+  E43E288B 4B8225DD C94F51E0 5D987DA1 FD52E369 E54785C6 EF5F19B1 3FB52B78
+  5FDF7E26 D99FD91B CC50BE0E 1D22F64C C523A7D4 1FA001F3 34FE5571 075933FF
+  A05847A6 0D690203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF
+  301F0603 551D2304 18301680 149892CA 3A8D5DF1 66031CA0 DB72E55E 960F8851
+  2D301D06 03551D0E 04160414 9892CA3A 8D5DF166 031CA0DB 72E55E96 0F88512D
+  300D0609 2A864886 F70D0101 05050003 82010100 3DA90BC3 FB2D3A27 A123BDB1
+  18D12768 90B65991 6D130E91 8CC382F5 2AA3F355 6E1F69BB D8A5B88D F28BE08A
+  0647E72E 6C9DE875 FB4A1218 8753090F FF97AEE6 CEB54061 86AAE569 2E7B7DB5
+  23B72B1A C88CB21E 2AB1C035 7B9E0262 3C17BDB4 A797300A E10AE79D D7EFB283
+  7D855424 D98FD10D A50E703C F65884D5 9FBC83F4 560A8BEB 838867DC 1D767DCE
+  4E351C5D 65FC649B 414D1990 3BF4A5EE E2D145CC 1DFD614E ABD5179B 58AF65E7
+  F1D5985C D84628FC B64DDF18 E3EAAA40 E241E0AC 932B9F5C 884D18D7 CE4E6FA6
+  642E5C68 3AAE61F1 D34C7A1A 1B1AF94B 6F4A2D56 3DD2EBB7 6A7B57D9 7C762BB4
+  06419D15 889806F9 AAA460A6 C87F2507 41E7E502
+        quit
+!
+!
+license udi pid ISR4321/K9 sn FDO230512SJ
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/0/0.13
+ encapsulation dot1Q 13
+ ip address 13.40.50.2 255.255.255.252
+!
+interface GigabitEthernet0/0/0.23
+ encapsulation dot1Q 23
+ ip address 23.5.3.2 255.255.255.252
+!
+interface GigabitEthernet0/0/0.34
+ encapsulation dot1Q 34
+ ip address 34.34.34.2 255.255.255.252
+!
+interface GigabitEthernet0/0/1
+ ip address 208.67.222.1 255.255.255.252
+ negotiation auto
+!
+interface Serial0/1/0
+ ip address 150.100.50.1 255.255.255.252
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 65003
+ bgp log-neighbor-changes
+ network 13.40.50.0 mask 255.255.255.252
+ network 23.5.3.0 mask 255.255.255.252
+ network 34.34.34.0 mask 255.255.255.252
+ network 150.100.50.0 mask 255.255.255.252
+ network 208.67.222.0 mask 255.255.255.252
+ redistribute static
+ neighbor 13.40.50.1 remote-as 65001
+ neighbor 23.5.3.1 remote-as 65002
+ neighbor 34.34.34.1 remote-as 65004
+ neighbor 150.100.50.2 remote-as 65004
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0
+ip route 8.8.8.8 255.255.255.255 GigabitEthernet0/0/1
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+ntp server 8.8.8.8
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end
