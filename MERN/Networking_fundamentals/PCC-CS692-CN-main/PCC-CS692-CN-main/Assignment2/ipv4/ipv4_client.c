@@ -78,6 +78,13 @@ int main(int argc, char *argv[]) {
     }
     
     // Connect to server
+    //int connect(int __fd, const struct sockaddr *__addr, socklen_t __len)
+    //pen a connection on socket FD to peer at ADDR (which LEN bytes long).
+    //For connectionless socket types, just set the default address to send to
+    //and the only address from which to accept transmissions.
+    //Return 0 on success, -1 for errors.
+    //This function is a cancellation point and therefore not marked with
+    //__THROW.
     if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Connection failed");
         close(sockfd);
