@@ -85,6 +85,149 @@ int main(int argc, char *argv[]) {
     //Return 0 on success, -1 for errors.
     //This function is a cancellation point and therefore not marked with
     //__THROW.
+    /**
+     * @file ipv4_client.c
+     * @brief This segment of code is part of an IPv4 client application that connects to a server,
+     * sends messages, and receives responses.
+     *
+     * Detailed explanation:
+     *
+     * 1.  `if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)`:
+     *     This line attempts to establish a connection to the server.
+     *     - `sockfd`: This is the socket file descriptor obtained earlier (presumably from a `socket()` call),
+     *       representing the client's end of the communication channel.
+     *     - `(struct sockaddr*)&server_addr`: This is a pointer to a `sockaddr` structure containing the
+     *       destination server's address (IP address and port number). It's cast to `(struct sockaddr*)`
+     *       because `connect()` expects a generic socket address structure. `server_addr` would have been
+     *       populated with the server's IP and port before this call.
+     *     - `sizeof(server_addr)`: This specifies the size of the `server_addr` structure.
+     *     - `< 0`: The `connect()` function returns 0 on success and -1 on error. This condition checks
+     *       if an error occurred during the connection attempt.
+     *
+     *     If `connect()` fails (returns a negative value):
+     *     - `perror("Connection failed")`: This function prints a system error message to `stderr`
+     *       (standard error output). The string "Connection failed" will be prepended to the
+     *       system-specific error description (e.g., "Connection refused", "Network is unreachable").
+     *     - `close(sockfd)`: The socket, even if not fully connected, should be closed to release
+     *       system resources.
+     *     - `exit(EXIT_FAILURE)`: The program terminates immediately, indicating an unsuccessful execution.
+     *       `EXIT_FAILURE` is a standard macro (usually 1) indicating failure.
+     *
+     * 2.  `printf("Connected to server %s:%s\n", argv[1], argv[2]);`:
+     *     If the `connect()` call was successful, this line prints a confirmation message to the console.
+     *     - `argv[1]`: Assumed to be the server's IP address passed as a command-line argument to the program.
+     *     - `argv[2]`: Assumed to be the server's port number passed as a command-line argument.
+     *
+     * 3.  `// Communication loop`
+     *     `while (1)`: This creates an infinite loop, allowing the client to continuously send messages
+     *     to the server and receive responses until explicitly broken.
+     *
+     * 4.  `printf("Enter message (or 'quit' to exit): ");`:
+     *     Prompts the user to enter a message to send to the server. It also informs the user
+     *     that typing "quit" will exit the communication loop.
+     *
+     * 5.  `if (fgets(message, sizeof(message), stdin) == NULL)`:
+     *     Reads a line of text from standard input (`stdin`) and stores it in the `message` buffer.
+     *     - `message`: The character array (buffer) where the input string will be stored.
+     *     - `sizeof(message)`: The maximum number of characters to read, including the null terminator.
+     *       This prevents buffer overflows.
+     *     - `stdin`: The standard input stream (usually the keyboard).
+     *     - `fgets()` returns `NULL` on error or if an end-of-file (EOF) condition is reached before
+     *       any characters are read. If this happens, the `break;` statement exits the `while` loop.
+     *
+     * 6.  `message[strcspn(message, "\n")] = 0;`:
+     *     Removes the newline character (`\n`) that `fgets()` typically includes at the end of the input string
+     *     if there's enough space in the buffer.
+     *     - `strcspn(message, "\n")`: This function searches for the first occurrence of any character
+     *       from the string "\n" (i.e., the newline character) within the `message` string. It returns
+     *       the length of the initial segment of `message` that does not contain `\n`.
+     *     - `message[...] = 0;`: By setting the character at that returned index to `0` (the null terminator `\0`),
+     *       the string is effectively truncated at that point, removing the newline. If no newline is found
+     *       (e.g., input was longer than buffer size minus one), `strcspn` returns `strlen(message)`, and this
+     *       line will correctly place the null terminator at the end of the existing string content if it was
+     *       already null-terminated, or potentially overwrite the last character if the buffer was full without a newline.
+     *
+     * 7.  `if (strcmp(message, "quit") == 0)`:
+     *     Compares the user's input message with the string "quit".
+     *     - `strcmp()`: String comparison function. It returns 0 if the two strings are identical.
+     *     - If the user typed "quit", the `break;` statement exits the `while` loop, ending the
+     *       communication session.
+     *
+     * 8.  `if (send(sockfd, message, strlen(message), 0) < 0)`:
+     *     Sends the entered message to the connected server.
+     *     - `sockfd`: The client's socket file descriptor.
+     *     - `message`: The buffer containing the null-terminated string to send.
+     *     - `strlen(message)`: The length of the message to send (excluding the null terminator, as `send`
+     *       deals with byte streams, not necessarily C strings, though here it's sending string data).
+     *     - `0`: Flags for the `send` operation. `0` usually means no special flags.
+     *     - `< 0`: `send()` returns the number of bytes sent on success, or -1 on error. This checks for errors.
+     *
+     *     If `send()` fails:
+     *     - `perror("Send failed")`: Prints a system error message related to the send failure.
+     *     - `break;`: Exits the `while` loop.
+     *
+     * 9.  `memset(buffer, 0, sizeof(buffer));`:
+     *     Clears the `buffer` (presumably a character array used for receiving data) by filling it with zeros.
+     *     This is important to ensure that previous data in the buffer doesn't interfere with the new
+     *     data being received, and to ensure the received string is null-terminated if the server doesn't
+     *     send one and the received data doesn't fill the buffer.
+     *     - `buffer`: The buffer to be cleared.
+     *     - `0`: The value to fill the buffer with (which is `\0`, the null character).
+     *     - `sizeof(buffer)`: The total size of the buffer in bytes.
+     *
+     * 10. `int bytes_received = recv(sockfd, buffer, sizeof(buffer) - 1, 0);`:
+     *     Receives data from the server.
+     *     - `sockfd`: The client's socket file descriptor.
+     *     - `buffer`: The buffer where the received data will be stored.
+     *     - `sizeof(buffer) - 1`: The maximum number of bytes to receive. It's `sizeof(buffer) - 1` to
+     *       leave space for a null terminator (`\0`) to ensure the received data can be treated as a
+     *       C string.
+     *     - `0`: Flags for the `recv` operation. `0` usually means no special flags.
+     *     - `bytes_received`: Stores the return value of `recv()`.
+     *
+     * 11. `if (bytes_received < 0)`:
+     *     Checks if an error occurred during `recv()`.
+     *     - `recv()` returns -1 on error.
+     *     - `perror("Receive failed")`: Prints a system error message.
+     *     - `break;`: Exits the `while` loop.
+     *
+     * 12. `else if (bytes_received == 0)`:
+     *     Checks if the server has closed the connection.
+     *     - `recv()` returns 0 if the remote peer (server) has performed an orderly shutdown of the connection.
+     *     - `printf("Server disconnected\n")`: Informs the user that the server has closed the connection.
+     *     - `break;`: Exits the `while` loop.
+     *
+     * 13. `// buffer[bytes_received] = '\0'; // Ensure null-termination (already handled by sizeof(buffer)-1 and memset)`
+     *     This line is commented out, but it would typically be used to explicitly null-terminate the
+     *     received data. However, because `recv` was called with `sizeof(buffer) - 1` and `memset`
+     *     cleared the buffer, the buffer will be null-terminated if `bytes_received` is less than
+     *     `sizeof(buffer) - 1`. If `bytes_received` is exactly `sizeof(buffer) - 1`, the last byte
+     *     is data, and the null terminator from `memset` at `buffer[sizeof(buffer)-1]` is still there.
+     *
+     * 14. `printf("Server response: %s\n", buffer);`:
+     *     Prints the response received from the server to the console. Since `buffer` is null-terminated
+     *     (due to `memset` and the `sizeof(buffer) - 1` limit in `recv`), `%s` can safely print it as a string.
+     *
+     * Loop continuation: If no `break` statement was encountered, the `while(1)` loop repeats,
+     * prompting the user for another message.
+     *
+     * 15. `// Clean up`
+     *     This section is executed after the `while` loop terminates (either by "quit" command,
+     *     send/receive error, or server disconnection).
+     *
+     * 16. `close(sockfd);`:
+     *     Closes the client's socket, releasing the associated system resources. This also informs
+     *     the server (if still connected) that the client is closing its end of the connection.
+     *
+     * 17. `printf("Connection closed\n");`:
+     *     Prints a message to the console indicating that the connection has been closed.
+     *
+     * 18. `return 0;`:
+     *     Indicates that the `main` function (or the function this snippet is part of) has completed
+     *     successfully.
+     *
+     * } // End of the function or code block
+     */
     if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Connection failed");
         close(sockfd);
