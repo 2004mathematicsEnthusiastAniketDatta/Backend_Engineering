@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <sys/types.h>
 
 #define PORT 8443
 #define BUFFER_SIZE 1024
@@ -91,7 +92,7 @@ int main() {
 
     while (1) {
         struct sockaddr_in addr;
-        uint len = sizeof(addr);
+        socklen_t len = sizeof(addr);
 
         client = accept(sockfd, (struct sockaddr*)&addr, &len);
         if (client < 0) {
