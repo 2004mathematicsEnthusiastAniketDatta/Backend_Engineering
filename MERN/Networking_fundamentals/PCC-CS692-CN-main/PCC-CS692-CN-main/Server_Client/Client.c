@@ -20,7 +20,7 @@ int main(int argc , char **argv){
 
     char buffer[1024];
 
-    if (argc < 3){
+    if (argc != 3){
         fprintf(stderr , "Usage: %s <server_ip> <port>\n", argv[0]);
         exit(1);
     }
@@ -43,17 +43,23 @@ int main(int argc , char **argv){
    printf("Message sent to server: Hello from the client :)\n");
 
     while (1) {
-        bzero(buffer, 1024);
-        n = read(sockfd, buffer, 1024);
+        bzero(buffer, 256);
+        printf("Enter message: ");
+        fgets(buffer, 256, stdin);
+        n = write(sockfd, buffer, strlen(buffer));
         if (n < 0) {
-            error("Error reading from socket");
+            handle_error("Error writing to socket");
+        }
+        bzero(buffer, 256);
+        n = read(sockfd, buffer, 256);
+        if (n < 0) {
+            handle_error("Error reading from socket");
         }
         printf("Server reply: %s\n", buffer);
         if (strncmp(buffer, "Quit", 4) == 0) {
             printf("Exiting client.\n");
             break;
         }
-    }
     close(sockfd);
     return 0;
 
