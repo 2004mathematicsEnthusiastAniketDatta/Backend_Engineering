@@ -19,5 +19,11 @@
     "denamed": "^2.0.4",
     "json5": "^2.2.3",
     "tsx": "^4.20.3"
-  }
+  },
+  "version": "1.0.0",
+  "description": "A smart DNS server leveraging state-of-the-art AI technology.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
