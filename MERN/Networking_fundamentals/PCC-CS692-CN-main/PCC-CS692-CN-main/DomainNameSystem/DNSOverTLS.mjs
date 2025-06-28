@@ -242,4 +242,4 @@ export default DNSOverTLS;
 // dns.resolve('example.com').then(console.log).catch(console.error);
 
 const dns = new DNSOverTLS();
-dns.resolve('hussennasser.com').then(console.log).catch(console.error);
+dns.resolve('google.com').then(console.log).catch(console.error);
