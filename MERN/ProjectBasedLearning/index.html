@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMind - AI-Powered IDE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .ide-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            grid-template-rows: 40px 1fr 200px;
+            height: 100vh;
+            gap: 1px;
+            background: #333;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: #2d2d30;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .logo {
+            color: #569cd6;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .file-explorer {
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            overflow-y: auto;
+        }
+
+        .explorer-header {
+            padding: 10px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .file-tree {
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 2px 0;
+            font-size: 13px;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #094771;
+        }
+
+        .editor-area {
+            background: #1e1e1e;
+            position: relative;
+        }
+
+        .editor-tabs {
+            background: #2d2d30;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .tab {
+            padding: 8px 15px;
+            background: #2d2d30;
+            border-right: 1px solid #3e3e42;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            background: #1e1e1e;
+        }
+
+        .editor {
+            height: calc(100% - 35px);
+            width: 100%;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .ai-panel {
+            background: #252526;
+            border-left: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-header {
+            padding: 10px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .ai-chat {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .message.user {
+            background: #094771;
+            margin-left: 20px;
+        }
+
+        .message.ai {
+            background: #2d2d30;
+            margin-right: 20px;
+        }
+
+        .ai-input {
+            padding: 10px;
+            border-top: 1px solid #3e3e42;
+        }
+
+        .ai-input input {
+            width: 100%;
+            padding: 8px;
+            background: #3c3c3c;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            color: #d4d4d4;
+            font-size: 13px;
+        }
+
+        .terminal {
+            grid-column: 1 / -1;
+            background: #0c0c0c;
+            border-top: 1px solid #3e3e42;
+            padding: 10px;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            color: #569cd6;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 22px;
+            background: #007acc;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            color: white;
+            z-index: 1000;
+        }
+
+        .loading {
+            opacity: 0.7;
+        }
+
+        .ai-thinking {
+            font-style: italic;
+            color: #569cd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="ide-container">
+        <div class="header">
+            <div class="logo">🧠 CodeMind IDE</div>
+        </div>
+
+        <div class="file-explorer">
+            <div class="explorer-header">Explorer</div>
+            <div class="file-tree" id="fileTree">
+                <div class="file-item active" data-file="app.js">📄 app.js</div>
+                <div class="file-item" data-file="index.html">📄 index.html</div>
+                <div class="file-item" data-file="style.css">📄 style.css</div>
+                <div class="file-item" data-file="README.md">📄 README.md</div>
+            </div>
+        </div>
+
+        <div class="editor-area">
+            <div class="editor-tabs">
+                <div class="tab active">app.js</div>
+            </div>
+            <div class="editor" id="editor">
+                <!-- Monaco Editor will be mounted here -->
+            </div>
+        </div>
+
+        <div class="ai-panel">
+            <div class="ai-header">🤖 AI Assistant</div>
+            <div class="ai-chat" id="chatArea">
+                <div class="message ai">
+                    <strong>CodeMind:</strong> Hello! I'm your AI coding assistant. I can help you:
+                    <ul style="margin: 8px 0; padding-left: 20px;">
+                        <li>Generate code based on your requirements</li>
+                        <li>Explain complex code sections</li>
+                        <li>Debug and fix issues</li>
+                        <li>Suggest architectural improvements</li>
+                        <li>Create documentation</li>
+                    </ul>
+                    What would you like to work on?
+                </div>
+            </div>
+            <!-- AI input box where user types their questions -->
+            <div class="ai-input">
+                <input type="text" id="aiInput" placeholder="Ask me anything about your code..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-header">Terminal</div>
+            <div id="terminalOutput">
+                $ Welcome to CodeMind Terminal<br>
+                $ Ready for commands...
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>Ready • JavaScript • UTF-8 • Ln 1, Col 1</span>
+    </div>
+
+    <!-- Loading Monaco Editor from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs/loader.min.js" 
+            integrity="sha512-z3t7zuHjqrzDhLIKLb/DcqPP4u5h5xdvX4xBDnK3LgvYIDqhDf4LyDrWm8FN8iBpGQE1KYXvJBCfVnVXBxXVWA==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
+    
+    <script>
+        'use strict';
+        
+        // ===============================
+        // APPLICATION STATE MANAGEMENT
+        // ===============================
+        // This object holds all the important data for our IDE application
+        const AppState = {
+            editor: null,                    // Will hold the Monaco editor instance
+            currentFile: 'app.js',          // Currently selected file
+            files: {                        // All files and their content
+                'app.js': '// Welcome to CodeMind IDE\n// Start coding with AI assistance!\n\nfunction helloWorld() {\n    console.log("Hello from CodeMind!");\n}\n\nhelloWorld();',
+                'index.html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>My App</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>',
+                'style.css': '/* Add your styles here */\nbody {\n    font-family: Arial, sans-serif;\n    margin: 0;\n    padding: 20px;\n}',
+                'README.md': '# My Project\n\nBuilt with CodeMind IDE - AI-powered development!'
+            },
+            isEditorReady: false            // Flag to check if editor is loaded
+        };
+
+        // ===============================
+        // UTILITY FUNCTIONS
+        // ===============================
+        // Helper functions used throughout the application
+        const Utils = {
+            // Makes text safe to display in HTML (prevents XSS attacks)
+            escapeHtml: (text) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            },
+            
+            // Delays function execution until user stops typing (performance optimization)
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+        };
+
+        // ===============================
+        // FILE MANAGEMENT SYSTEM
+        // ===============================
+        // Handles switching between files and updating the UI
+        const FileManager = {
+            // Main function to switch from one file to another
+            switchFile: (fileName) => {
+                try {
+                    // Don't do anything if it's the same file or invalid filename
+                    if (!fileName || fileName === AppState.currentFile) return;
+
+                    // Save the current file's content before switching
+                    if (AppState.editor && AppState.isEditorReady) {
+                        AppState.files[AppState.currentFile] = AppState.editor.getValue();
+                    }
+
+                    // Update current file reference
+                    AppState.currentFile = fileName;
+                    
+                    // Update the visual elements
+                    FileManager.updateFileTreeUI(fileName);
+                    FileManager.updateTabsUI(fileName);
+
+                    // Load the new file's content and set the right programming language
+                    if (AppState.editor && AppState.isEditorReady) {
+                        const language = FileManager.getLanguageFromFile(fileName);
+                        monaco.editor.setModelLanguage(AppState.editor.getModel(), language);
+                        AppState.editor.setValue(AppState.files[fileName] || '');
+                    }
+
+                    // Update status bar to show current file info
+                    StatusBar.update();
+                } catch (error) {
+                    console.error('Error switching file:', error);
+                }
+            },
+
+            // Updates the file tree to highlight the active file
+            updateFileTreeUI: (fileName) => {
+                const fileItems = document.querySelectorAll('.file-item');
+                fileItems.forEach(item => {
+                    const isActive = item.dataset.file === fileName;
+                    item.classList.toggle('active', isActive);
+                });
+            },
+
+            // Updates the tab bar to show current file
+            updateTabsUI: (fileName) => {
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Update the first tab with current filename
+                const firstTab = document.querySelector('.tab');
+                if (firstTab) {
+                    firstTab.textContent = fileName;
+                    firstTab.classList.add('active');
+                }
+            },
+
+            // Determines the programming language based on file extension
+            getLanguageFromFile: (fileName) => {
+                if (!fileName) return 'plaintext';
+                
+                const ext = fileName.split('.').pop()?.toLowerCase();
+                const langMap = {
+                    'js': 'javascript',
+                    'jsx': 'javascript',
+                    'ts': 'typescript',
+                    'tsx': 'typescript',
+                    'html': 'html',
+                    'css': 'css',
+                    'scss': 'scss',
+                    'md': 'markdown',
+                    'py': 'python',
+                    'json': 'json',
+                    'xml': 'xml',
+                    'yaml': 'yaml',
+                    'yml': 'yaml'
+                };
+                return langMap[ext] || 'plaintext';
+            }
+        };
+
+        // ===============================
+        // CODE EDITOR MANAGEMENT
+        // ===============================
+        // Handles the Monaco editor initialization and configuration
+        const EditorManager = {
+            // Initialize the Monaco code editor
+            init: () => {
+                try {
+                    // Configure Monaco editor to load from CDN
+                    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' }});
+                    
+                    // Load Monaco editor and create instance
+                    require(['vs/editor/editor.main'], () => {
+                        try {
+                            // Create the editor with initial configuration
+                            AppState.editor = monaco.editor.create(document.getElementById('editor'), {
+                                value: AppState.files[AppState.currentFile],
+                                language: FileManager.getLanguageFromFile(AppState.currentFile),
+                                theme: 'vs-dark',           // Dark theme to match IDE
+                                automaticLayout: true,       // Auto-resize with container
+                                fontSize: 14,               // Readable font size
+                                wordWrap: 'on',            // Wrap long lines
+                                minimap: { enabled: false }, // Disable minimap for cleaner look
+                                scrollBeyondLastLine: false  // Don't scroll past content
+                            });
+
+                            // Mark editor as ready
+                            AppState.isEditorReady = true;
+
+                            // Set up event listeners for editor changes
+                            // This runs when user types or modifies code
+                            AppState.editor.onDidChangeModelContent(() => {
+                                StatusBar.update();         // Update status bar
+                                CodeAnalyzer.analyze();     // Analyze code changes
+                            });
+
+                            // This runs when user moves cursor
+                            AppState.editor.onDidChangeCursorPosition(() => {
+                                StatusBar.update();
+                            });
+
+                            // Initial status bar update
+                            StatusBar.update();
+                            console.log('Monaco editor initialized successfully');
+                        } catch (error) {
+                            console.error('Error creating Monaco editor:', error);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading Monaco editor:', error);
+                }
+            }
+        };
+
+        // ===============================
+        // AI CHAT FUNCTIONALITY
+        // ===============================
+        // Handles all AI assistant interactions
+        const AIChat = {
+            // Handle user input in the AI chat box
+            handleInput: (event) => {
+                // Check if user pressed Enter (not Shift+Enter for new line)
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault(); // Stop the default form submission
+                    
+                    const input = event.target.value.trim(); // Get the text and remove extra spaces
+                    
+                    // Only process if user actually typed something
+                    if (input) {
+                        AIChat.addMessage('user', input);    // Add user message to chat
+                        event.target.value = '';             // Clear the input box
+                        AIChat.processRequest(input);        // Send to AI for processing
+                    }
+                }
+            },
+
+            // Add a new message to the chat area
+            addMessage: (sender, message) => {
+                try {
+                    const chatArea = document.getElementById('chatArea');
+                    if (!chatArea) {
+                        console.error('Chat area not found');
+                        return;
+                    }
+
+                    // Create new message element
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${sender}`;
+                    
+                    // Set sender name and message content
+                    const senderName = sender === 'user' ? 'You' : 'CodeMind';
+                    const safeMessage = typeof message === 'string' ? message : String(message);
+                    
+                    messageDiv.innerHTML = `<strong>${Utils.escapeHtml(senderName)}:</strong> ${safeMessage}`;
+                    
+                    // Add to chat and scroll to bottom
+                    chatArea.appendChild(messageDiv);
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                } catch (error) {
+                    console.error('Error adding message:', error);
+                }
+            },
+
+            // Process user request and generate AI response
+            processRequest: (request) => {
+                try {
+                    // Show that AI is thinking
+                    AIChat.addMessage('ai', '<span class="ai-thinking">🤔 Analyzing your request...</span>');
+                    
+                    // Simulate AI processing with realistic delay (1-2 seconds)
+                    setTimeout(() => {
+                        AIChat.removeLastMessage();           // Remove thinking message
+                        const response = AIChat.generateResponse(request); // Generate response
+                        AIChat.addMessage('ai', response);    // Show AI response
+                    }, Math.random() * 1000 + 1000);
+                } catch (error) {
+                    console.error('Error processing AI request:', error);
+                    AIChat.addMessage('ai', 'Sorry, I encountered an error processing your request. Please try again.');
+                }
+            },
+
+            // Remove the last message from chat (used to remove "thinking" indicator)
+            removeLastMessage: () => {
+                try {
+                    const chatArea = document.getElementById('chatArea');
+                    if (chatArea) {
+                        const messages = chatArea.querySelectorAll('.message');
+                        if (messages.length > 0) {
+                            messages[messages.length - 1].remove();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error removing last message:', error);
+                }
+            },
+
+            // Generate AI response based on user request
+            generateResponse: (request) => {
+                try {
+                    const currentCode = AppState.editor ? AppState.editor.getValue() : '';
+                    const lowerRequest = request.toLowerCase();
+
+                    // Check what type of help user is asking for
+                    if (lowerRequest.includes('generate') || lowerRequest.includes('create')) {
+                        return `I can help you generate code! Based on your current file (${AppState.currentFile}), here's what I suggest:\n\n<code>// Generated code would appear here\n// This is a demo - real AI integration coming soon!</code>\n\nWould you like me to insert this into your editor?`;
+                    } else if (lowerRequest.includes('explain') || lowerRequest.includes('what does')) {
+                        return `Looking at your ${AppState.currentFile} file, I can explain the code structure:\n\n• Your code defines a simple function\n• It uses modern JavaScript syntax\n• The logic flow is clear and efficient\n\nAny specific part you'd like me to explain in detail?`;
+                    } else if (lowerRequest.includes('debug') || lowerRequest.includes('error')) {
+                        return `🔍 Analyzing your code for potential issues...\n\n✅ No syntax errors detected\n⚠️ Consider adding error handling\n💡 Suggestion: Add input validation\n\nWould you like me to show you how to implement these improvements?`;
+                    } else {
+                        return `I understand you want help with: "${request}"\n\nI can assist with:\n• Code generation and completion\n• Debugging and error fixing\n• Code explanation and documentation\n• Architecture suggestions\n• Best practices recommendations\n\nCan you be more specific about what you'd like me to help with?`;
+                    }
+                } catch (error) {
+                    console.error('Error generating AI response:', error);
+                    return 'Sorry, I encountered an error generating a response. Please try again.';
+                }
+            }
+        };
+
+        // ===============================
+        // CODE ANALYZER
+        // ===============================
+        // Analyzes code changes (placeholder for future AI integration)
+        const CodeAnalyzer = {
+            // Analyze code with delay to avoid too many calls while typing
+            analyze: Utils.debounce(() => {
+                try {
+                    console.log('Analyzing code changes...');
+                    // This would integrate with the AI backend in a real application
+                } catch (error) {
+                    console.error('Error analyzing code:', error);
+                }
+            }, 1000)
+        };
+
+        // ===============================
+        // STATUS BAR MANAGEMENT
+        // ===============================
+        // Updates the bottom status bar with current file info
+        const StatusBar = {
+            update: () => {
+                try {
+                    const statusBar = document.querySelector('.status-bar span');
+                    if (!statusBar) return;
+
+                    // Get current cursor position
+                    let line = 1, col = 1;
+                    if (AppState.editor && AppState.isEditorReady) {
+                        const position = AppState.editor.getPosition();
+                        if (position) {
+                            line = position.lineNumber;
+                            col = position.column;
+                        }
+                    }
+
+                    // Update status bar text
+                    const language = FileManager.getLanguageFromFile(AppState.currentFile);
+                    statusBar.textContent = `Ready • ${language} • UTF-8 • Ln ${line}, Col ${col}`;
+                } catch (error) {
+                    console.error('Error updating status bar:', error);
+                }
+            }
+        };
+
+        // ===============================
+        // MAIN APPLICATION
+        // ===============================
+        // Main application controller
+        const App = {
+            // Initialize the entire application
+            init: () => {
+                try {
+                    console.log('Initializing CodeMind IDE...');
+                    
+                    // Start the code editor
+                    EditorManager.init();
+                    
+                    // Set up all event listeners
+                    App.setupEventListeners();
+                    
+                    console.log('CodeMind IDE initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing app:', error);
+                }
+            },
+
+            // Set up all event listeners for user interactions
+            setupEventListeners: () => {
+                try {
+                    // File tree click handler - when user clicks on a file
+                    const fileTree = document.getElementById('fileTree');
+                    if (fileTree) {
+                        fileTree.addEventListener('click', (e) => {
+                            if (e.target.classList.contains('file-item')) {
+                                const fileName = e.target.dataset.file;
+                                if (fileName) {
+                                    FileManager.switchFile(fileName);
+                                }
+                            }
+                        });
+                    }
+
+                    // AI input handler - when user types in AI chat box
+                    const aiInput = document.getElementById('aiInput');
+                    if (aiInput) {
+                        // This is the MAIN fix - properly connecting the event listener
+                        aiInput.addEventListener('keydown', AIChat.handleInput);
+                    }
+
+                    // Keyboard shortcuts - Ctrl+` to focus on AI input
+                    document.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey && e.key === '`') {
+                            e.preventDefault();
+                            const aiInput = document.getElementById('aiInput');
+                            if (aiInput) {
+                                aiInput.focus();
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error setting up event listeners:', error);
+                }
+            }
+        };
+
+        // ===============================
+        // APPLICATION STARTUP
+        // ===============================
+        // Start the application when the page is fully loaded
+        if (document.readyState === 'loading') {
+            // If page is still loading, wait for it to finish
+            document.addEventListener('DOMContentLoaded', App.init);
+        } else {
+            // If page is already loaded, start immediately
+            App.init();
+        }
+    </script>
+</body>
+</html>

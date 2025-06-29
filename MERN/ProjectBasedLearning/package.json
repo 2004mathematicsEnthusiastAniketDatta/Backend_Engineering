@@ -1,0 +1,33 @@
+{
+  "name": "codemind-ide",
+  "version": "1.0.0",
+  "description": "AI-powered web-based IDE with agentic capabilities",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required for this setup'",
+    "test": "echo 'Tests coming soon'"
+  },
+  "keywords": [
+    "ide", 
+    "ai", 
+    "coding", 
+    "assistant", 
+    "agent",
+    "monaco-editor"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
