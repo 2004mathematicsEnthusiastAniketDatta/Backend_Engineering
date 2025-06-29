@@ -239,6 +239,7 @@
                         <li>Debug and fix issues</li>
                         <li>Suggest architectural improvements</li>
                         <li>Create documentation</li>
+                        <li>Perform CRUD operations on files</li>
                     </ul>
                     What would you like to work on?
                 </div>
@@ -267,7 +268,7 @@
             integrity="sha512-z3t7zuHjqrzDhLIKLb/DcqPP4u5h5xdvX4xBDnK3LgvYIDqhDf4LyDrWm8FN8iBpGQE1KYXvJBCfVnVXBxXVWA==" 
             crossorigin="anonymous" 
             referrerpolicy="no-referrer"></script>
-    
+    <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
     <script>
         'use strict';
         
@@ -674,6 +675,21 @@
             // If page is already loaded, start immediately
             App.init();
         }
+        let container=document.querySelector('monaco-editor-containerz')
+        if (container) {
+            container.style.width = '100%';
+            container.style.height = '100%';
+        } else {
+            console.error('Monaco editor container not found');
+        }
+        import * as monaco from 'monaco-editor';
+
+// Create editor instance
+const editor = monaco.editor.create(container, {
+    value: 'console.log("Hello, world!");',
+    language: 'javascript',
+    theme: 'vs-dark'
+});
     </script>
 </body>
 </html>
