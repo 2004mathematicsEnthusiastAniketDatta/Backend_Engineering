@@ -274,3 +274,36 @@ chmod +x /start-postgres.sh
 
 # Start PostgreSQL when container starts
 CMD ["/start-postgres.sh"]
+
+# Images
+# docker images
+# docker run -d hello-world : running containers  in detached mode
+# docker ps : list running containers
+# docker ps -a : list all containers (including stopped)
+# docker rmi <imageid> : remove the image
+# docker rmi -f <imageid> : remove an image forced
+# docker exec -it <CONTAINER_ID> : execute container
+# docker exec -it <CONTAINER_ID> /bin/bash : open interactive bash shell in running container
+# docker logs <CONTAINER_ID> : view container logs
+# docker logs -f <CONTAINER_ID> : follow/tail container logs in real-time
+# docker stop <CONTAINER_ID> : stop a running container
+# docker start <CONTAINER_ID> : start a stopped container
+# docker restart <CONTAINER_ID> : restart a container
+# docker rm <CONTAINER_ID> : remove a stopped container
+# docker rm -f <CONTAINER_ID> : force remove a running container
+# docker kill <CONTAINER_ID> : forcefully kill a running container
+# docker inspect <CONTAINER_ID> : detailed container information
+# docker stats <CONTAINER_ID> : real-time resource usage statistics
+# docker top <CONTAINER_ID> : display running processes in container
+# docker port <CONTAINER_ID> : list port mappings
+# docker cp <CONTAINER_ID>:/path/to/file ./local/path : copy files from container to host
+# docker cp ./local/file <CONTAINER_ID>:/path/to/destination : copy files from host to container
+# docker commit <CONTAINER_ID> <new_image_name> : create new image from container changes
+# docker export <CONTAINER_ID> > container.tar : export container filesystem as tar
+# docker pause <CONTAINER_ID> : pause all processes in container
+# docker unpause <CONTAINER_ID> : unpause all processes in container
+# docker rename <CONTAINER_ID> <new_name> : rename a container
+# docker update --memory=512m <CONTAINER_ID> : update container resource limits
+# docker wait <CONTAINER_ID> : wait for container to stop and get exit code
+# docker attach <CONTAINER_ID> : attach to running container's stdout/stdin
+# docker diff <CONTAINER_ID> : show filesystem changes since container creation
