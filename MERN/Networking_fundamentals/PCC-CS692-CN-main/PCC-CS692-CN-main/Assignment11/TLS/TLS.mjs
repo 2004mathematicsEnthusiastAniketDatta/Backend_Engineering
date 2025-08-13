@@ -576,5 +576,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 // Note: In a real-world application, you would not run the demonstration code directly.
 
 
+//Symmetric Encryption 
+//Assume both parties have the same key(The most difficult thing)
+//users use the key to encrypt messages
+//send this
+//reciever gets the encrypted message
+//Uses the same key to decrypt the message
+//AES
+//
+
 
 

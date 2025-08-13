@@ -1,0 +1,276 @@
+# https://docs.docker.com/engine/install/debian/
+# https://hub.docker.com
+# Use a base image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"]
+
+# Docker Architecture Components:
+# 1. Docker Engine: Core runtime that manages containers, images, networks, and volumes
+# 2. Docker Hub: Cloud-based registry service for sharing container images
+# 3. Local Docker Registry: Private registry for storing images locally
+# 4. Docker Daemon: Background service that manages Docker objects
+# 5. Docker CLI: Command-line interface for interacting with Docker daemon
+# 6. containerd: High-level container runtime that manages container lifecycle
+# 7. runc: Low-level container runtime that actually runs containers
+
+# This Dockerfile will be built into an image and can be:
+# - Stored locally in Docker Engine's image cache
+# - Pushed to Docker Hub for public sharing
+# - Pushed to a private registry for team/organization use
+# Docker Behind the Scenes - In Depth:
+
+# Image Layers & Union File System:
+# - Each instruction creates a new layer in the image
+# - Layers are read-only and cached for reuse
+# - Union file system (OverlayFS) combines layers into single view
+# - Copy-on-Write: containers get writable layer on top
+
+# Container Runtime Process:
+# 1. Docker CLI sends API calls to Docker daemon via REST API
+# 2. Daemon pulls image layers from registry if not cached locally
+# 3. containerd manages container lifecycle (create, start, stop)
+# 4. runc creates container using Linux namespaces and cgroups
+# 5. Container process runs isolated in its own namespace
+
+# Linux Kernel Features Used:
+# - Namespaces: Process isolation (PID, Network, Mount, User, IPC, UTS)
+# - Cgroups: Resource limiting and monitoring (CPU, Memory, I/O)
+# - Capabilities: Fine-grained privilege control
+# - Seccomp: System call filtering for security
+# - AppArmor/SELinux: Mandatory access control
+
+# Networking:
+# - Bridge network: Default isolated network per container
+# - Host network: Container shares host's network stack
+# - None network: No network access
+# - Custom networks: User-defined networks with DNS resolution
+# - Port mapping: iptables rules forward host ports to container
+
+# Storage:
+# - Volumes: Persistent data managed by Docker
+# - Bind mounts: Direct host directory mounting
+# - tmpfs: Temporary memory-based storage
+# - Storage drivers: Device mapper, overlay2, btrfs, zfs
+
+# Build Process Optimization:
+# - Multi-stage builds reduce final image size
+# - BuildKit: Enhanced build engine with parallel processing
+# - Build cache: Reuses unchanged layers across builds
+# - .dockerignore: Excludes files from build context
+
+# Pull and run PostgreSQL database server
+# Command to pull and run PostgreSQL container:
+# docker pull postgres:15-alpine
+# docker run -d \
+#   --name postgres-db \
+#   -e POSTGRES_DB=myapp \
+#   -e POSTGRES_USER=admin \
+#   -e POSTGRES_PASSWORD=password123 \
+#   -p 5432:5432 \
+#   -v postgres_data:/var/lib/postgresql/data \
+#   postgres:15-alpine
+
+# For docker-compose integration, create docker-compose.yml:
+# version: '3.8'
+# services:
+#   postgres:
+#     image: postgres:15-alpine
+#     container_name: postgres-db
+#     environment:
+#       POSTGRES_DB: myapp
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: password123
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - app-network
+# 
+# volumes:
+#   postgres_data:
+# 
+# networks:
+#   app-network:
+#     driver: bridge
+
+# Multi-container setup with PostgreSQL database
+# Create a separate Dockerfile for PostgreSQL or use docker-compose
+
+# Option 1: Separate PostgreSQL Dockerfile (Dockerfile.postgres)
+# FROM postgres:15-alpine
+# ENV POSTGRES_DB=myapp
+# ENV POSTGRES_USER=admin
+# ENV POSTGRES_PASSWORD=password123
+# EXPOSE 5432
+
+# Option 2: Use docker-compose.yml for multi-service setup
+# Build and run both services together:
+# docker-compose up --build
+
+# To run PostgreSQL alongside this Node.js app:
+# 1. Build this Dockerfile: docker build -t node-app .
+# 2. Create network: docker network create app-network
+# 3. Run PostgreSQL: docker run -d --name postgres-db --network app-network -e POSTGRES_DB=myapp -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=password123 -p 5432:5432 postgres:15-alpine
+# 4. Run Node app: docker run -d --name node-app --network app-network -p 3000:3000 node-app
+
+# For production, use docker-compose.yml:
+# docker-compose up -d
+
+# Looking at your Dockerfile comments, I can see you're working with Docker containers for a Node.js app with PostgreSQL. Let me explain the key Docker lifecycle commands for managing containers:
+
+# Docker Start, Stop, and Remove Commands
+# docker start - Resume a stopped container
+# docker stop - Gracefully stop a running container
+# docker rm - Remove/delete containers
+# Key Differences & Workflow:
+# docker run <CONTAINER ID> → Creates AND starts a new container
+# docker stop <CONTAINER ID> → Stops the container (data persists)
+# docker start <CONTAINER ID> → Restarts an existing stopped container
+# docker rm <CONTAINER ID> → Permanently deletes the container
+# Common Workflow with Your Setup:
+# Gotchas:
+# You can't start a container that was never created with run
+# rm permanently deletes containers - you'll lose any data not in volumes
+# Use docker-compose down instead of individual stops when using compose files
+# For your multi-service setup, docker-compose commands are usually more convenient than managing individual containers!
+# docker --man : manual of docker
+
+# A self-sufficient runtime for containers
+
+# Common Commands:
+#   run         Create and run a new container from an image
+#   exec        Execute a command in a running container
+#   ps          List containers
+#   build       Build an image from a Dockerfile
+#   pull        Download an image from a registry
+#   push        Upload an image to a registry
+#   images      List images
+#   login       Authenticate to a registry
+#   logout      Log out from a registry
+#   search      Search Docker Hub for images
+#   version     Show the Docker version information
+#   info        Display system-wide information
+
+# Management Commands:
+#   builder     Manage builds
+#   buildx*     Docker Buildx
+#   compose*    Docker Compose
+#   container   Manage containers
+#   context     Manage contexts
+#   image       Manage images
+#   manifest    Manage Docker image manifests and manifest lists
+#   network     Manage networks
+#   plugin      Manage plugins
+#   system      Manage Docker
+#   trust       Manage trust on Docker images
+#   volume      Manage volumes
+
+# Swarm Commands:
+#   swarm       Manage Swarm
+
+# Commands:
+#   attach      Attach local standard input, output, and error streams to a running container
+#   commit      Create a new image from a container's changes
+#   cp          Copy files/folders between a container and the local filesystem
+#   create      Create a new container
+#   diff        Inspect changes to files or directories on a container's filesystem
+#   events      Get real time events from the server
+#   export      Export a container's filesystem as a tar archive
+#   history     Show the history of an image
+#   import      Import the contents from a tarball to create a filesystem image
+#   inspect     Return low-level information on Docker objects
+#   kill        Kill one or more running containers
+#   load        Load an image from a tar archive or STDIN
+#   logs        Fetch the logs of a container
+#   pause       Pause all processes within one or more containers
+#   port        List port mappings or a specific mapping for the container
+#   rename      Rename a container
+#   restart     Restart one or more containers
+#   rm          Remove one or more containers
+#   rmi         Remove one or more images
+#   save        Save one or more images to a tar archive (streamed to STDOUT by default)
+#   start       Start one or more stopped containers
+#   stats       Display a live stream of container(s) resource usage statistics
+#   stop        Stop one or more running containers
+#   tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+#   top         Display the running processes of a container
+#   unpause     Unpause all processes within one or more containers
+#   update      Update configuration of one or more containers
+#   wait        Block until one or more containers stop, then print their exit codes
+
+# Global Options:
+#       --config string      Location of client config files (default "/home/codespace/.docker")
+#   -c, --context string     Name of the context to use to connect to the daemon (overrides DOCKER_HOST env var and default context
+#                            set with "docker context use")
+#   -D, --debug              Enable debug mode
+#   -H, --host list          Daemon socket to connect to
+#   -l, --log-level string   Set the logging level ("debug", "info", "warn", "error", "fatal") (default "info")
+#       --tls                Use TLS; implied by --tlsverify
+#       --tlscacert string   Trust certs signed only by this CA (default "/home/codespace/.docker/ca.pem")
+#       --tlscert string     Path to TLS certificate file (default "/home/codespace/.docker/cert.pem")
+#       --tlskey string      Path to TLS key file (default "/home/codespace/.docker/key.pem")
+#       --tlsverify          Use TLS and verify the remote
+#   -v, --version            Print version information and quit
+
+# Run 'docker COMMAND --help' for more information on a command.
+
+# For more help on how to use Docker, head to https://docs.docker.com/go/guides/
+# docker --help
+
+# docker run --help
+
+# Use Ubuntu as base image
+FROM ubuntu:22.04
+
+# Avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install PostgreSQL and required packages
+RUN apt-get update && apt-get install -y \
+    postgresql \
+    postgresql-contrib \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch to postgres user
+USER postgres
+
+# Initialize the database
+RUN /etc/init.d/postgresql start && \
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" && \
+    createdb -O docker docker
+
+# Adjust PostgreSQL configuration
+RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/*/main/pg_hba.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/*/main/postgresql.conf
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+# Add a script to start PostgreSQL
+USER root
+RUN echo '#!/bin/bash\n\
+service postgresql start\n\
+tail -f /var/log/postgresql/postgresql-*-main.log' > /start-postgres.sh && \
+chmod +x /start-postgres.sh
+
+# Start PostgreSQL when container starts
+CMD ["/start-postgres.sh"]
