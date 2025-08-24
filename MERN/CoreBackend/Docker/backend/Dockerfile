@@ -20,11 +20,6 @@ COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
-# Generate Prisma client
-FROM deps AS prisma
-COPY prisma ./prisma
-RUN npx prisma generate
-
 # Build the app
 FROM deps AS build
 ENV NODE_ENV=development
@@ -38,8 +33,7 @@ FROM base AS runner
 WORKDIR /app
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY package.json ./package.json
-COPY prisma ./prisma
+COPY --from=build /app/prisma ./prisma
 ENV PORT=3000
 EXPOSE 3000
 CMD ["node", "dist/server.js"]

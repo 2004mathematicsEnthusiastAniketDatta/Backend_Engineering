@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*', methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] }));
 app.use(compression());
 app.use(express.json());
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
@@ -88,6 +88,9 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   logger.error(err);
   if (err?.name === 'ZodError') {
     return res.status(400).json({ message: 'Invalid request', errors: err.errors });
+  }
+  if (err?.code === 'P2025') {
+    return res.status(404).json({ message: 'Not found' });
   }
   res.status(500).json({ message: 'Internal server error' });
 });
