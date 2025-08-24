@@ -9,8 +9,16 @@ RUN apk add --no-cache openssl
 # Install dependencies separately for better layer caching
 FROM base AS deps
 COPY package.json package-lock.json* ./
-# Avoid running postinstall here; prisma schema isn't copied yet
-RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
+COPY prisma ./prisma
+# Install ALL dependencies (including dev) for the build stage
+ENV NODE_ENV=development
+RUN --mount=type=cache,target=/root/.npm npm ci
+
+# Install only production dependencies
+FROM base AS prod-deps
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
 # Generate Prisma client
 FROM deps AS prisma
@@ -28,12 +36,10 @@ RUN npm run build
 # Production image
 FROM base AS runner
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY package.json ./package.json
 COPY prisma ./prisma
-# Generate Prisma client now that schema is present
-RUN npx prisma generate && npm prune --omit=dev
 ENV PORT=3000
 EXPOSE 3000
 CMD ["node", "dist/server.js"]
