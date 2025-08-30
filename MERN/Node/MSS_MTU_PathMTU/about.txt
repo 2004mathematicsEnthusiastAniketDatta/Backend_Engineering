@@ -1,10 +1,43 @@
-# TCP Layer 4 Segmentation and Network Stack Encapsulation
+MSS/MTU and Path MTU Discovery - Technical Overview
 
-## TCP Segment Structure
-TCP operates at Layer 4 (Transport Layer) and creates **segments** as its Protocol Data Unit (PDU). Each segment contains:
-- TCP header (20-60 bytes)
-- Application data payload
-- Sequence numbers for reliable delivery
-- Window size for flow control
+MSS (Maximum Segment Size):
+- TCP-level parameter defining maximum payload size in a TCP segment
+- Excludes TCP/IP headers (typically 40 bytes for IPv4, 60 bytes for IPv6)
+- Negotiated during TCP handshake via MSS option
+- Default: MTU - IP header - TCP header
+- Prevents IP fragmentation at sender
 
-### TCP Header Deep Dive
+MTU (Maximum Transmission Unit):
+- Link-layer parameter defining maximum frame size
+- Includes all headers (Ethernet, IP, TCP, payload)
+- Standard Ethernet MTU: 1500 bytes
+- Jumbo frames: up to 9000 bytes
+- Loopback interface: typically 65536 bytes
+
+Path MTU Discovery (PMTUD):
+- Mechanism to determine smallest MTU along network path
+- Uses ICMP "Fragmentation Needed" messages
+- Sets DF (Don't Fragment) bit in IP header
+- Routers drop oversized packets and send ICMP Type 3 Code 4
+- Host adjusts packet size based on ICMP feedback
+
+Implementation Details:
+- RFC 1191 (IPv4 PMTUD), RFC 8201 (IPv6 PMTUD)
+- Kernel maintains per-route MTU cache
+- TCP MSS clamping prevents MTU issues
+- Black hole detection for broken ICMP
+- Packetization Layer Path MTU Discovery (PLPMTUD) for UDP
+
+Kernel Parameters:
+- net.ipv4.tcp_mtu_probing: Enable TCP MTU probing
+- net.ipv4.ip_no_pmtu_disc: Disable PMTUD
+- net.ipv4.route.min_pmtu: Minimum PMTU value
+- net.core.message_cost: Rate limit ICMP messages
+
+Common Issues:
+- ICMP filtering breaks PMTUD
+- MSS clamping at NAT/firewall
+- IPv6 requires PMTUD (no fragmentation at routers)
+- TCP window scaling affects effective throughput
+
+Overview : TCP layer 4 unit is segment  
