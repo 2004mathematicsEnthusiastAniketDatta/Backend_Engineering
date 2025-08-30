@@ -269,7 +269,6 @@ function createSecureServer() {
         ...sslOptions,
         
         // Force TLS 1.3 and 1.2 only (disable older vulnerable versions)
-        secureProtocol: 'TLS_method',
         minVersion: 'TLSv1.2', // Minimum supported version
         maxVersion: 'TLSv1.3', // Maximum supported version
         
