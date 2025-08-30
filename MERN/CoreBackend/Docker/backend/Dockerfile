@@ -436,6 +436,594 @@ CMD ["node", "dist/server.js"]
 # 5. Configure proper DNS timeouts and retries in applications
 # 6. Monitor DNS resolution performance
 # 7. Document service dependencies and communication patterns
+# =============================================================================
+# MULTI-NETWORK CONTAINER SCENARIOS
+# =============================================================================
 
+# When a container connects to a different network than other containers,
+# it creates network isolation and affects communication patterns:
 
+# Scenario 1: Container on Default Bridge + Custom Network
+# docker network create app-network
+# docker run --name backend --network app-network myapp
+# docker run --name database postgres  # Uses default bridge (172.17.0.0/16)
+# 
+# Result: backend cannot reach database by name or IP
+# Solution: Connect backend to both networks
 
+# Scenario 2: Multi-Network Container (Bridge Pattern)
+# docker network create frontend-network
+# docker network create backend-network
+# docker run --name api-gateway --network frontend-network nginx
+# docker network connect backend-network api-gateway
+# docker run --name backend --network backend-network myapp
+# 
+# Result: api-gateway can communicate with both networks
+# frontend-network: Web traffic isolation
+# backend-network: Internal API communication
+
+# =============================================================================
+# CONNECTING CONTAINERS TO MULTIPLE NETWORKS
+# =============================================================================
+
+# Method 1: Connect During Creation
+# docker run --name multi-net-container \
+#   --network network1 \
+#   --network network2 \
+#   myimage
+
+# Method 2: Connect After Creation
+# docker run --name container1 --network network1 myimage
+# docker network connect network2 container1
+# docker network connect network3 container1
+
+# Method 3: Docker Compose Multi-Network
+# version: '3.8'
+# services:
+#   api-gateway:
+#     image: nginx
+#     networks:
+#       - frontend
+#       - backend
+#   backend:
+#     build: .
+#     networks:
+#       - backend
+#       - database
+#   database:
+#     image: postgres
+#     networks:
+#       - database
+# 
+# networks:
+#   frontend:
+#     driver: bridge
+#   backend:
+#     driver: bridge
+#   database:
+#     driver: bridge
+
+# =============================================================================
+# NETWORK ISOLATION IMPLICATIONS
+# =============================================================================
+
+# Different Networks = No Communication:
+# Network A (172.18.0.0/16): Container1, Container2
+# Network B (172.19.0.0/16): Container3, Container4
+# Result: Container1 cannot reach Container3 directly
+
+# Communication Paths with Network Isolation:
+# 1. Via Host Port Publishing:
+#    Container1 -> Host:published-port -> Container3
+# 2. Via Multi-Network Bridge Container:
+#    Container1 -> Bridge-Container -> Container3
+# 3. Via External Load Balancer/Proxy:
+#    Container1 -> External-LB -> Container3
+
+# =============================================================================
+# PRACTICAL NETWORK ARCHITECTURE EXAMPLES
+# =============================================================================
+
+# Example 1: Three-Tier Application with Network Segmentation
+# 
+# Frontend Network (DMZ):
+# - Web servers, load balancers
+# - Public-facing components
+# - Network: 172.20.0.0/16
+# 
+# Backend Network (Application Tier):
+# - API servers, business logic
+# - Internal communication only
+# - Network: 172.21.0.0/16
+# 
+# Database Network (Data Tier):
+# - Database servers, cache
+# - Highly restricted access
+# - Network: 172.22.0.0/16
+# 
+# Bridge Container (API Gateway):
+# - Connected to frontend + backend networks
+# - Routes requests between tiers
+# - Implements security policies
+
+# Example 2: Microservices with Service Mesh
+# 
+# Public Network:
+# - Ingress controllers, public APIs
+# - Network: 172.25.0.0/16
+# 
+# Service Network:
+# - Internal microservices
+# - Service-to-service communication
+# - Network: 172.26.0.0/16
+# 
+# Infrastructure Network:
+# - Monitoring, logging, service discovery
+# - Network: 172.27.0.0/16
+
+# =============================================================================
+# TROUBLESHOOTING MULTI-NETWORK SCENARIOS
+# =============================================================================
+
+# Check container network connections:
+# docker inspect <container> | jq '.[0].NetworkSettings.Networks'
+# docker network ls
+# docker network inspect <network-name>
+
+# Test connectivity between networks:
+# docker exec container1 ping container2  # Same network
+# docker exec container1 ping 172.19.0.2  # Different network (should fail)
+# docker exec container1 netstat -rn      # Check routing table
+
+# Common connectivity issues:
+# 1. Containers on different networks cannot communicate
+# 2. DNS resolution only works within same custom network
+# 3. Default bridge has no DNS resolution
+# 4. Port conflicts when bridging networks
+
+# =============================================================================
+# SECURITY CONSIDERATIONS
+# =============================================================================
+
+# Network Isolation Benefits:
+# - Prevents lateral movement in security breaches
+# - Separates concerns (web, app, data layers)
+# - Enables fine-grained access controls
+# - Simplifies compliance and auditing
+
+# Multi-Network Security Patterns:
+# 1. Zero-Trust Networking: No implicit trust between networks
+# 2. Principle of Least Privilege: Minimal network access required
+# 3. Network Policies: Explicit allow/deny rules
+# 4. Traffic Inspection: Monitor inter-network communication
+
+# Implementation in Docker:
+# - Use custom networks instead of default bridge
+# - Avoid connecting containers to multiple networks unless necessary
+# - Implement reverse proxy/API gateway for controlled access
+# - Use secrets management for cross-network authentication
+
+# =============================================================================
+# DOCKER COMPOSE MULTI-NETWORK EXAMPLE
+# =============================================================================
+
+# Complete example for this backend application:
+# version: '3.8'
+# services:
+#   # Frontend network only
+#   nginx:
+#     image: nginx:alpine
+#     ports:
+#       - "80:80"
+#     networks:
+#       - frontend
+# 
+#   # Bridge between frontend and backend
+#   api-gateway:
+#     image: nginx:alpine
+#     networks:
+#       - frontend
+#       - backend
+#     depends_on:
+#       - backend
+# 
+#   # Backend network only
+#   backend:
+#     build: .
+#     networks:
+#       - backend
+#       - database
+#     environment:
+#       - DATABASE_URL=postgresql://postgres:password@postgres:5432/myapp
+#     depends_on:
+#       - postgres
+# 
+#   # Database network only
+#   postgres:
+#     image: postgres:15-alpine
+#     networks:
+#       - database
+#     environment:
+#       - POSTGRES_DB=myapp
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=password
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+# 
+# networks:
+#   frontend:
+#     driver: bridge
+#     name: frontend-net
+#   backend:
+#     driver: bridge
+#     name: backend-net
+#   database:
+#     driver: bridge
+#     name: database-net
+# 
+# volumes:
+#   postgres_data:
+
+# Network connectivity in this setup:
+# nginx (frontend) <-> api-gateway <-> backend <-> postgres
+# Each connection uses a different network for isolation
+
+# =============================================================================
+# NETWORK BRIDGE CONTAINER EXAMPLE - DETAILED ANALYSIS
+# =============================================================================
+
+# Command Breakdown:
+
+# Step 1: docker run --name gw --network backend -d nhttpd
+# - Creates a container named "gw" (gateway)
+# - Connects it to "backend" network during creation
+# - Runs in detached mode (-d)
+# - Uses nhttpd image (lightweight HTTP server)
+
+# Step 2: docker network connect frontend gw
+# - Connects existing "gw" container to "frontend" network
+# - Container now has interfaces on BOTH networks
+# - Acts as a bridge between frontend and backend networks
+
+# =============================================================================
+# MULTI-NETWORK CONTAINER ARCHITECTURE
+# =============================================================================
+
+# Container "gw" Network Configuration:
+# Interface 1 (eth0): Connected to backend network
+#   - IP: 172.21.0.x/16 (backend network CIDR)
+#   - Gateway: 172.21.0.1 (backend bridge)
+#   - Hostname resolution: backend network containers
+
+# Interface 2 (eth1): Connected to frontend network  
+#   - IP: 172.20.0.x/16 (frontend network CIDR)
+#   - Gateway: 172.20.0.1 (frontend bridge)
+#   - Hostname resolution: frontend network containers
+
+# Routing Table in "gw" container:
+# Destination     Gateway         Interface
+# 172.20.0.0/16   0.0.0.0         eth1        # Frontend network (direct)
+# 172.21.0.0/16   0.0.0.0         eth0        # Backend network (direct)
+# 0.0.0.0/0       172.20.0.1      eth1        # Default route via frontend
+
+# =============================================================================
+# NETWORK BRIDGE FUNCTIONALITY
+# =============================================================================
+
+# The "gw" container can now:
+# 1. Receive requests from frontend network containers
+# 2. Forward/proxy requests to backend network containers
+# 3. Act as a reverse proxy or API gateway
+# 4. Implement load balancing between networks
+# 5. Provide network-level security filtering
+
+# Communication Flows:
+# Frontend Container -> gw (172.20.0.x) -> Backend Container
+# Backend Container -> gw (172.21.0.x) -> Frontend Container
+
+# Example HTTP Proxy Configuration in "gw":
+# upstream backend {
+#     server backend-service:3000;
+#     server backend-replica:3000;
+# }
+# server {
+#     listen 80;
+#     location /api/ {
+#         proxy_pass http://backend;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#     }
+# }
+
+# =============================================================================
+# PRACTICAL USE CASES FOR BRIDGE CONTAINERS
+# =============================================================================
+
+# Use Case 1: API Gateway Pattern
+# - Frontend apps connect to gateway on frontend network
+# - Gateway routes requests to appropriate backend services
+# - Implements authentication, rate limiting, SSL termination
+
+# Use Case 2: Database Proxy
+# - Applications connect to proxy on app network
+# - Proxy manages connections to database on secure network
+# - Implements connection pooling, query caching, monitoring
+
+# Use Case 3: Service Mesh Sidecar
+# - Each service has a proxy sidecar on multiple networks
+# - Handles service discovery, load balancing, circuit breaking
+# - Provides observability and security policies
+
+# Use Case 4: Network Security Gateway
+# - Filters traffic between network segments
+# - Implements firewall rules, intrusion detection
+# - Logs and monitors cross-network communication
+
+# =============================================================================
+# CONTAINER INSPECTION COMMANDS
+# =============================================================================
+
+# Inspect multi-network container configuration:
+# docker inspect gw | jq '.[0].NetworkSettings.Networks'
+# 
+# Expected output shows two network interfaces:
+# {
+#   "backend": {
+#     "IPAddress": "172.21.0.3",
+#     "Gateway": "172.21.0.1",
+#     "NetworkID": "backend-network-id"
+#   },
+#   "frontend": {
+#     "IPAddress": "172.20.0.4", 
+#     "Gateway": "172.20.0.1",
+#     "NetworkID": "frontend-network-id"
+#   }
+# }
+
+# Test connectivity from within the gateway container:
+# docker exec -it gw sh
+# ip addr show                    # Shows both eth0 and eth1 interfaces
+# ip route show                   # Shows routing table
+# ping backend-service            # Test backend network connectivity
+# ping frontend-app               # Test frontend network connectivity
+# netstat -tuln                   # Show listening ports
+
+# =============================================================================
+# TRAFFIC FLOW EXAMPLES
+# =============================================================================
+
+# Example 1: Frontend to Backend via Gateway
+# 1. frontend-app (172.20.0.2) -> gw (172.20.0.4:80)
+# 2. gw processes request, forwards to backend
+# 3. gw (172.21.0.3) -> backend-service (172.21.0.5:3000)
+# 4. Response flows back: backend -> gw -> frontend
+
+# Example 2: Direct Backend Communication (if gw allows)
+# 1. backend-auth (172.21.0.6) -> gw (172.21.0.3:8080)
+# 2. gw validates request, forwards to another backend service
+# 3. gw (172.21.0.3) -> backend-user (172.21.0.7:3001)
+
+# =============================================================================
+# SECURITY IMPLICATIONS
+# =============================================================================
+
+# Benefits:
+# - Centralized access control between network segments
+# - Traffic inspection and logging capabilities
+# - Prevents direct container-to-container communication
+# - Enables network-level authentication and authorization
+
+# Risks:
+# - Single point of failure for cross-network communication
+# - Potential performance bottleneck
+# - Increased attack surface if gateway is compromised
+# - Complex configuration and maintenance
+
+# Mitigation Strategies:
+# - Deploy multiple gateway instances for high availability
+# - Implement health checks and automatic failover
+# - Use least-privilege principles for gateway access
+# - Regular security updates and monitoring
+
+# =============================================================================
+# ALTERNATIVE NETWORKING APPROACHES
+# =============================================================================
+
+# Alternative 1: Host Networking
+# docker run --network host myapp
+# - Container shares host network stack
+# - No network isolation, direct host access
+# - Higher performance, simplified networking
+# - Security trade-offs
+
+# Alternative 2: Macvlan Networks
+# docker network create -d macvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o parent=eth0 macvlan-net
+# - Containers get direct IP addresses on host network
+# - Appears as separate devices on network
+# - No NAT overhead, direct external access
+
+# Alternative 3: Overlay Networks (Swarm/Kubernetes)
+# docker network create --driver overlay multi-host-network
+# - Spans multiple Docker hosts
+# - Encrypted communication between hosts
+# - Service discovery across hosts
+
+# =============================================================================
+# MONITORING AND OBSERVABILITY
+# =============================================================================
+
+# Network monitoring for bridge containers:
+# docker stats gw                    # Resource usage
+# docker logs gw                     # Application logs
+# docker exec gw ss -tuln           # Network connections
+# docker exec gw iftop              # Real-time traffic monitoring
+
+# Network flow analysis:
+# tcpdump -i docker0                # Bridge traffic capture
+# docker exec gw tcpdump -i eth0    # Backend network traffic
+# docker exec gw tcpdump -i eth1    # Frontend network traffic
+
+# Performance metrics to monitor:
+# - Network throughput between segments
+# - Connection count and duration
+# - Error rates and latency
+# - Resource utilization (CPU, memory, network I/O)
+
+# =============================================================================
+# DOCKER COMPOSE EQUIVALENT
+# =============================================================================
+
+# version: '3.8'
+# services:
+#   gateway:
+#     image: nhttpd
+#     container_name: gw
+#     networks:
+#       - frontend
+#       - backend
+#     ports:
+#       - "80:80"
+#     deploy:
+#       replicas: 2        # High availability
+#       restart_policy:
+#         condition: on-failure
+# 
+#   frontend-app:
+#     image: myapp/frontend
+#     networks:
+#       - frontend
+#     depends_on:
+#       - gateway
+# 
+#   backend-service:
+#     build: .
+#     networks:
+#       - backend
+#     depends_on:
+#       - database
+# 
+#   database:
+#     image: postgres:15
+#     networks:
+#       - backend     # Isolated from frontend
+# 
+# networks:
+#   frontend:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.20.0.0/16
+#   backend:
+#     driver: bridge  
+#     ipam:
+#       config:
+#         - subnet: 172.21.0.0/16
+
+# =============================================================================
+# STATIC ROUTING CONFIGURATION FOR MULTI-NETWORK COMMUNICATION
+# =============================================================================
+
+# Install network routing utilities
+# RUN apk add --no-cache \
+#     iproute2 \
+#     iptables \
+#     net-tools
+#
+# be a --cap-admin while running docker containers before doing this 
+# Static routing examples for container-to-container communication
+# Format: ip route add <destination_network> via <gateway_ip> [dev <interface>]
+
+# Example 1: Route traffic to backend network via gateway container
+# ip route add 172.21.0.0/16 via 172.20.0.4 dev eth0
+# - Routes all backend network traffic through gateway at 172.20.0.4
+# - Uses eth0 interface (frontend network interface)
+# - Enables frontend containers to reach backend services
+
+# Example 2: Route specific service subnet via dedicated gateway
+# ip route add 172.22.0.0/24 via 172.21.0.3 dev eth1
+# - Routes database subnet traffic through database gateway
+# - Uses eth1 interface (backend network interface)
+# - Provides controlled access to database tier
+
+# Example 3: Route external traffic via host gateway
+# ip route add 0.0.0.0/0 via 172.17.0.1 dev eth0
+# - Default route for external internet access
+# - Routes through Docker bridge gateway
+# - Standard configuration for outbound traffic
+
+# =============================================================================
+# DYNAMIC ROUTING CONFIGURATION
+# =============================================================================
+
+# Container startup script to configure custom routes
+# COPY routing-config.sh /usr/local/bin/
+# RUN chmod +x /usr/local/bin/routing-config.sh
+
+# Example routing-config.sh:
+# #!/bin/sh
+# 
+# # Wait for network interfaces to be ready
+# sleep 2
+# 
+# # Add route to backend services via gateway
+# if ip addr show eth0 | grep -q "172.20."; then
+#     ip route add 172.21.0.0/16 via 172.20.0.4 2>/dev/null || true
+# fi
+# 
+# # Add route to database services via backend gateway  
+# if ip addr show eth1 | grep -q "172.21."; then
+#     ip route add 172.22.0.0/16 via 172.21.0.5 2>/dev/null || true
+# fi
+# 
+# # Start main application
+# exec "$@"
+
+# =============================================================================
+# ROUTING TABLE VERIFICATION COMMANDS
+# =============================================================================
+
+# Verify routing configuration:
+# ip route show                    # Display current routing table
+# ip route get 172.21.0.5         # Test route to specific destination
+# traceroute 172.21.0.5           # Trace packet path to destination
+# ping -c 3 172.21.0.5            # Test connectivity via configured route
+
+# Common routing table entries:
+# 172.20.0.0/16 dev eth0 proto kernel scope link src 172.20.0.2
+# 172.21.0.0/16 via 172.20.0.4 dev eth0
+# default via 172.20.0.1 dev eth0
+
+# =============================================================================
+# PERSISTENT ROUTING WITH NETWORK NAMESPACES
+# =============================================================================
+
+# For containers requiring complex routing that persists across restarts:
+# 
+# Method 1: Init script approach
+# ENTRYPOINT ["/usr/local/bin/routing-config.sh"]
+# CMD ["node", "dist/server.js"]
+# 
+# Method 2: Supervisor approach for multiple processes
+# RUN apk add --no-cache supervisor
+# COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# =============================================================================
+# SECURITY CONSIDERATIONS FOR CUSTOM ROUTING
+# =============================================================================
+
+# Required capabilities for route manipulation:
+# docker run --cap-add=NET_ADMIN mycontainer
+# 
+# Or in docker-compose:
+# services:
+#   myservice:
+#     cap_add:
+#       - NET_ADMIN
+#     build: .
+
+# Network policy implications:
+# - Custom routes can bypass network isolation
+# - Requires careful security review
+# - Should be used with proper access controls
+# - Monitor for route table modifications
