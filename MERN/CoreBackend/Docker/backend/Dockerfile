@@ -285,7 +285,157 @@ CMD ["node", "dist/server.js"]
 # - Both targets respond identically (likely same container image)
 # - Communication is instantaneous (local bridge network)
 # - No external network traffic (stays within Docker host)
+# =============================================================================
+# CONTAINER DNS RESOLUTION AND SERVICE DISCOVERY
+# =============================================================================
 
+# Install DNS utilities for container-to-container name resolution
+# RUN apk add --no-cache \
+#     bind-tools \
+#     dnsutils \
+#     iputils \
+#     busybox-extras
+
+# =============================================================================
+# DNS RESOLUTION IN DOCKER NETWORKS
+# =============================================================================
+
+# Default Bridge Network Limitations:
+# - No automatic DNS resolution between containers
+# - Containers must communicate via IP addresses only
+# - /etc/hosts contains only container's own hostname
+
+# Custom Bridge Network Benefits:
+# - Built-in DNS resolution by container name
+# - Automatic service discovery
+# - Container names act as hostnames
+
+# =============================================================================
+# ENABLING CONTAINER NAME RESOLUTION
+# =============================================================================
+
+# Method 1: Create Custom Bridge Network (Recommended)
+# docker network create --driver bridge myapp-network
+# docker run --network myapp-network --name container1 myimage
+# docker run --network myapp-network --name container2 myimage
+# 
+# Then from container1:
+# nslookup container2  # Resolves to container2's IP
+# ping container2      # Works with container name
+# curl http://container2:3000  # HTTP requests by name
+
+# Method 2: Use Docker Compose (Automatic Custom Network)
+# version: '3.8'
+# services:
+#   backend:
+#     build: .
+#     networks:
+#       - app-network
+#   frontend:
+#     image: nginx
+#     networks:
+#       - app-network
+# networks:
+#   app-network:
+#     driver: bridge
+
+# Method 3: Link Containers (Legacy - Not Recommended)
+# docker run --name db postgres
+# docker run --link db:database myapp
+# # Creates /etc/hosts entry: <db_ip> database db
+
+# =============================================================================
+# DNS TROUBLESHOOTING COMMANDS
+# =============================================================================
+
+# Test DNS resolution from within container:
+# nslookup <container_name>           # Lookup container by name
+# nslookup <container_name> 127.0.0.11  # Use Docker's internal DNS
+# dig <container_name>                # Detailed DNS query
+# cat /etc/resolv.conf               # Check DNS server configuration
+# cat /etc/hosts                     # Check static hostname entries
+
+# Docker's Internal DNS Server:
+# - Default bridge: No DNS resolution
+# - Custom networks: DNS server at 127.0.0.11
+# - Resolves container names to current IP addresses
+# - Handles container restarts and IP changes
+
+# =============================================================================
+# MIGRATION FROM DEFAULT TO CUSTOM BRIDGE
+# =============================================================================
+
+# Current State (Default Bridge - No DNS):
+# docker run --name backend-container myapp
+# docker run --name frontend-container nginx
+# # Communication only via IP: curl http://172.17.0.2:3000
+
+# Improved State (Custom Bridge - With DNS):
+# docker network create app-bridge
+# docker run --network app-bridge --name backend myapp
+# docker run --network app-bridge --name frontend nginx
+# # Communication via names: curl http://backend:3000
+
+# =============================================================================
+# DOCKER COMPOSE INTEGRATION
+# =============================================================================
+
+# Example docker-compose.yml for this backend:
+# version: '3.8'
+# services:
+#   backend:
+#     build: .
+#     container_name: backend-app
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - NODE_ENV=production
+#       - DATABASE_URL=postgresql://user:pass@postgres:5432/db
+#     depends_on:
+#       - postgres
+#     networks:
+#       - app-network
+# 
+#   postgres:
+#     image: postgres:15-alpine
+#     container_name: postgres-db
+#     environment:
+#       - POSTGRES_DB=myapp
+#       - POSTGRES_USER=user
+#       - POSTGRES_PASSWORD=password
+#     networks:
+#       - app-network
+# 
+# networks:
+#   app-network:
+#     driver: bridge
+#     name: myapp-bridge
+
+# =============================================================================
+# NETWORK-AWARE APPLICATION CONFIGURATION
+# =============================================================================
+
+# Update application configuration to use container names:
+# Database connection string: postgresql://user:pass@postgres-db:5432/myapp
+# Redis connection: redis://redis-cache:6379
+# Microservice URLs: http://user-service:8080/api/users
+
+# Environment variables for service discovery:
+# ENV DATABASE_HOST=postgres-db
+# ENV REDIS_HOST=redis-cache
+# ENV USER_SERVICE_URL=http://user-service:8080
+
+# =============================================================================
+# PRODUCTION BEST PRACTICES
+# =============================================================================
+
+# 1. Always use custom networks in production
+# 2. Use Docker Compose or orchestration tools (Kubernetes, Docker Swarm)
+# 3. Implement health checks for service discovery
+# 4. Use consistent naming conventions for containers
+# 5. Configure proper DNS timeouts and retries in applications
+# 6. Monitor DNS resolution performance
+# 7. Document service dependencies and communication patterns
 
 
 
