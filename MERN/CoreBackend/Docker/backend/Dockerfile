@@ -170,13 +170,13 @@ CMD ["node", "dist/server.js"]
 # =============================================================================
 
 # Network debugging tools to add to containers:
-RUN apk add --no-cache \
-    iproute2 \
-    iptables \
-    tcpdump \
-    nmap \
-    bind-tools \
-    bridge-utils
+# RUN apk add --no-cache \
+#     iproute2 \
+#     iptables \
+#     tcpdump \
+#     nmap \
+#     bind-tools \
+#     bridge-utils
 
 # Container network inspection commands:
 # ip addr show                     # Show container interfaces
@@ -221,7 +221,70 @@ RUN apk add --no-cache \
 #    - Docker Swarm overlay networks for multi-host communication
 #    - External tools: Flannel, Calico, Weave for Kubernetes
 #    - Service discovery and load balancing considerations
+# =============================================================================
+# DOCKER CONTAINER NETWORK COMMUNICATION EXAMPLE
+# =============================================================================
 
+# The following commands demonstrate inter-container communication within 
+# Docker's default bridge network:
+
+# Command Breakdown:
+# docker exec -it s1 bash
+# - docker exec: Execute a command in a running container
+# - -it: Interactive terminal (stdin + tty allocation)
+# - s1: Container name or ID
+# - bash: Command to execute (opens bash shell)
+
+# From inside container 's1', the following curl commands were executed:
+
+# curl 172.17.0.3
+# <html><body><h1>It works!</h1></body></html>
+# 
+# Analysis:
+# - Source: Container 's1' (likely 172.17.0.1 or different IP)
+# - Target: Container at 172.17.0.3 running HTTP server (Apache/Nginx)
+# - Result: Successfully received HTTP response
+# - Network Path: Container -> docker0 bridge -> Target container
+# - This demonstrates Layer 2 switching within the bridge network
+
+# curl 172.17.0.2  
+# <html><body><h1>It works!</h1></body></html>
+#
+# Analysis:
+# - Source: Same container 's1'
+# - Target: Container at 172.17.0.2 running HTTP server
+# - Result: Successfully received identical HTTP response
+# - Network Flow: Both containers are on same bridge network (172.17.0.0/16)
+
+# =============================================================================
+# NETWORK TOPOLOGY IMPLICATIONS
+# =============================================================================
+
+# This demonstrates that:
+# 1. Multiple containers can run identical services on same bridge network
+# 2. Containers can communicate directly using IP addresses
+# 3. No port conflicts because each container has its own network namespace
+# 4. Both containers (172.17.0.2 and 172.17.0.3) are serving HTTP on port 80
+# 5. The bridge network (docker0) facilitates seamless container-to-container communication
+
+# Network Layout:
+# ┌─────────────┐    ┌──────────────┐    ┌─────────────┐    ┌─────────────┐
+# │   Host OS   │    │ Container s1 │    │172.17.0.2   │    │172.17.0.3   │
+# │             │    │              │    │(HTTP Server)│    │(HTTP Server)│
+# └─────────────┘    └──────────────┘    └─────────────┘    └─────────────┘
+#        │                   │                   │                   │
+#        └───────────────────┼───────────────────┼───────────────────┘
+#                           │                   │
+#                    ┌─────────────────────────────────┐
+#                    │     docker0 Bridge Network     │
+#                    │        172.17.0.1/16           │
+#                    └─────────────────────────────────┘
+
+# Key Observations:
+# - No DNS resolution used (direct IP addressing)
+# - Both targets respond identically (likely same container image)
+# - Communication is instantaneous (local bridge network)
+# - No external network traffic (stays within Docker host)
 
 
 
