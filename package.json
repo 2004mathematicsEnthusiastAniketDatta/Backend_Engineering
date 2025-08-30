@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "express": "^5.1.0",
+    "https": "^1.0.0",
     "monaco-editor": "^0.52.2",
-    "node-modules": "^1.0.1"
+    "node-modules": "^1.0.1",
+    "url": "^0.11.4"
   }
 }
