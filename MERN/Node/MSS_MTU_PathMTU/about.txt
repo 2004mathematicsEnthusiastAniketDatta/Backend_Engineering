@@ -1,0 +1,10 @@
+# TCP Layer 4 Segmentation and Network Stack Encapsulation
+
+## TCP Segment Structure
+TCP operates at Layer 4 (Transport Layer) and creates **segments** as its Protocol Data Unit (PDU). Each segment contains:
+- TCP header (20-60 bytes)
+- Application data payload
+- Sequence numbers for reliable delivery
+- Window size for flow control
+
+### TCP Header Deep Dive
