@@ -150,3 +150,41 @@ process.on('SIGINT', () => {
     console.log('Shutting down...');
     server.close(() => process.exit(0));
 });
+
+// X.509 Certificate
+// Certificate Header 
+// - Version
+// - Serial Number
+// - Signature Algorithm Identifier
+// - Issuer Name (Who issued the certificate)
+// - Validity Period (start and end dates)
+// - Subject Name ( Owner of the certificate)
+// - Subject Public Key Info
+// Public Key
+// - Algorithm identifier
+// - Public Key Data
+// Optional Extensions (X.509 v3)
+// - Subject Alternative Name (SAN)
+// - Key Usage (e.g. digitalSignature, keyEncipherment)
+// - Extended Key Usage (e.g. serverAuth, clientAuth)
+// - Basic Constraints (e.g. CA:TRUE/FALSE)
+// - CRL Distribution Points
+// - Authority Key Identifier
+// - Subject Key Identifier
+// Digital Signature
+// - Signature Algorithm Identifier
+// - Signature Value ( Signed by Issuer's Private Key )
+// Certificates
+// Certificates can be "Self Signed"
+//  - i.e. private key signing the certificate belong to the public key.
+//  - Usually untrusted and used for testing / local.
+// Certificates can sign "other certificates"
+//  - Creating a trust chain
+//  - Issuer name is who issued this
+//  - Let's encrypt
+// Ultimately a ROOT cert is found 
+//   - ROOT certs are always self signed 
+//   - They are trusted by everybody.
+//   - Installed with OS root (certificate store).
+
+

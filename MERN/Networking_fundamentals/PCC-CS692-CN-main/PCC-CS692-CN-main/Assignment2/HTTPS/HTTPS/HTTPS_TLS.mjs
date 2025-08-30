@@ -1,8 +1,42 @@
 /**  Hypertext Transfer Protocol Secure (HTTPS) and Transport Layer Security (TLS) 
  * Node implements HTTPS client and Server on top of Transport Layer Security.
- * 
- * HTTPS/TLS Core Concepts :
- * 
+ *  Hypertext Transfer Protocol (Secure) (HTTPS)
+ * Node implements HTTPS client and server.
+ * On top of TLS (Transport Layer Security).
+ * Symmetric -> You encrypt with key and decrypt with the same key
+ * One key
+ * Fast but both client and server must have the same key
+ * Asymmetric -> You encrypt with a key and decrypt with another 
+ * Comes in pairs : Two keys Private and public
+ * Slower but both client and server can have their own public keys.
+ * We always want to encrypt with symmetric encryptions.
+ * Exchange the symmetric key with asymmetric encryption.
+ * Symmetric Encryption: Assume both parties have the same key(The most difficult thing)
+ * User requires the key to encrypt messages.
+ * Send this key securely to the other party.
+ * Symmetric Encryption : Receiver gets the encrypted message.
+ * User requires the same key to decrypt.
+ * E.G. AES 128
+ * Public key vs Private key Rules :
+ * Public key private key are pairs (e.g. Red public , Blue Private key)
+ * Given the Private Key we can generate the public key.
+ * Given the Public Key , we cannot get the Private Key.
+ * Encrypting with the Public Key : We can encrypt a message with public key.
+ * And only owner of Private key can decrypt this.
+ * Proves authenticity.
+ * Encrypting with the Private Key : We can encrypt a message with private key and only the corresponding
+ * Public Key can decrypt this. Only owner of the private key could have signed this document and protects confidentiality , nobody could have missed with this.
+ * Usage of digital signature in private key encryption.
+ * The hash of the document is encrypted with the private key.
+ * We need a way to proof Authenticity.
+ * Generate a pair of public or private key.
+ * Put a public key in a certificate
+ * Put the website name in the certificate
+ * Sign the certificate with a private key.
+ * Meet x509
+ * X.509 is a standard that defines the format of public key certificates.
+ * It includes information such as the public key, the identity of the certificate holder, and the digital signature of the certificate authority (CA).
+ * HTTPS/TLS Core Concepts:
  * 1. SYMMETRIC vs ASYMMETRIC ENCRYPTION:
  *    - Symmetric: Same key for encrypt/decrypt (fast, but key exchange problem)
  *    - Asymmetric: Public/Private key pairs (slower, solves key exchange)
