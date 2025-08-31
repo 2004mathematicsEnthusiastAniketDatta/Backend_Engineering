@@ -11,7 +11,6 @@ const projectRoot = path.resolve(__dirname, '..');
 process.chdir(projectRoot);
 
 require('dotenv').config();
-
 const https = require('https');
 const http = require('http');
 const express = require('express');
@@ -32,7 +31,7 @@ class HTTPSServer {
         this.server = null;
         
         // Server configuration
-        this.port = process.env.PORT || 8443;
+        this.port = process.env.PORT || 8445;
         this.host = process.env.HOST || 'localhost';
         this.environment = process.env.NODE_ENV || 'development';
         
@@ -83,7 +82,12 @@ class HTTPSServer {
         }));
 
         // Initialize security middleware
-        this.securityMiddleware.init(this.app);
+        try {
+            this.securityMiddleware.init(this.app);
+        } catch (error) {
+            console.error('❌ Security middleware initialization failed:', error.message);
+            throw error;
+        }
 
         // Custom middleware for HTTPS-only responses
         this.app.use((req, res, next) => {
