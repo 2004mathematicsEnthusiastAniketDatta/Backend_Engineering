@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "boilerplate of a server",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/httpsServer.js",
+    "dev": "nodemon src/httpsServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-certs": "npm run clean-certs && cd certs && openssl genrsa -out server.key 4096 && openssl req -new -key server.key -out server.csr -subj \"/C=US/ST=CA/L=San Francisco/O=Development/OU=IT Department/CN=localhost\" && openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt",
+    "clean-certs": "rm -f certs/server.key certs/server.crt certs/server.csr",
+    "validate-certs": "openssl x509 -in certs/server.crt -text -noout",
+    "check-tls": "curl -k -v https://localhost:8445/tls-info"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.0.1",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
