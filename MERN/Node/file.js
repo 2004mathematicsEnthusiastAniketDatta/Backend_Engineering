@@ -31,6 +31,8 @@ console.log(ob.divide(5, 3));
 // //    }
 // //    return require(id);
 // //otherwise search in own internal module
+// if not found search in node_modules
+// otherwise throw error
 // }
 
 
