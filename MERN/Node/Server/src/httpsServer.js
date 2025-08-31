@@ -367,3 +367,11 @@ if (require.main === module) {
 }
 
 module.exports = HTTPSServer;
+
+
+// Topological sort states which modules needs to be compiled first
+// This is typically determined by the dependencies between modules
+// package-lock.json tells the dependencies depend on which sub dependencies and
+// their respective versions the tree is generated from package-lock.json on the
+// basis of which dependencies and their sub-dependencies need to be compiled first and installed.
+// This ensures that all required modules are available before any module is executed
