@@ -37,3 +37,5 @@ app.get('/cart',(req,res)=>{
     res.send('Cart Page')
 })
 app.listen(8888)
+
+console.log({__dirname,__filename});
