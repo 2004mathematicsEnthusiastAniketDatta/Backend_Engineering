@@ -28,4 +28,6 @@ module.exports = Calculator;
 //export.divide = function(a,b) { if(b===0) throw new Error("Division by zero"); return a/b; };
 //per file only one default export is allowed there may be many exports and name can't be changed
 //require('fs') -> node built-in module
-//require('./math') -> user-defined module
+//require('./math.js') -> user-defined module and file is present in currrent directory
+//require('../math.js') -> file is present in parent directory
+//
