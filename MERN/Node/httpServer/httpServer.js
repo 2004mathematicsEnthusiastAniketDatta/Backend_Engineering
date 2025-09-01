@@ -1,6 +1,43 @@
 // Express creates an HTTP server only
 "use strict";
-
+//express is like a handler function with lot more features for initial assumptions
+/* 
+ * EXPRESS UNDERSTANDING:
+ * 
+ * Express is essentially a sophisticated wrapper around Node.js's built-in HTTP module.
+ * At its core, express() returns a function that can handle HTTP requests and responses.
+ * 
+ * Conceptually, express works like this:
+ * 
+ * function express() {
+ *   // Create an application function that acts as a request handler
+ *   function app(req, res, next) {
+ *     // This is where the magic happens - routing, middleware execution, etc.
+ *     app.handle(req, res, next);
+ *   }
+ *   
+ *   // Add methods and properties to the app function
+ *   app.use = function(middleware) { ... };
+ *   app.get = function(path, handler) { ... };
+ *   app.listen = function(port, callback) {
+ *     // Internally creates: require('http').createServer(app).listen(port, callback)
+ *   };
+ *   
+ *   return app;
+ * }
+ * 
+ * The returned 'app' function IS the handler function that gets passed to http.createServer().
+ * When you call app.listen(), express internally does:
+ * require('http').createServer(app).listen(port)
+ * 
+ * Express enhances the basic handler with:
+ * - Middleware stack management
+ * - Route matching and parsing
+ * - Request/Response object enhancements
+ * - Template engine integration
+ * - Static file serving
+ * - Error handling
+ */
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
@@ -34,15 +71,15 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/about', (req, res) => {
-    res.send('About Page');
+    res.render('about');
 });
 
 app.get('/profile', (req, res) => {
-    res.send('Profile Page');
+    res.render('profile');
 });
 
 app.get('/cart', (req, res) => {
-    res.send('Cart Page');
+    res.render('cart');
 });
 
 const PORT = 8888;
