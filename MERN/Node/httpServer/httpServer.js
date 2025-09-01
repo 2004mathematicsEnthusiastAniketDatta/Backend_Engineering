@@ -3,7 +3,8 @@
 //express is like a handler function with lot more features for initial assumptions
 /* 
  * EXPRESS UNDERSTANDING:
- * 
+ * Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. 
+ * Express provides a thin layer of fundamental web application features, without obscuring Node.js features that you know and love. 
  * Express is essentially a sophisticated wrapper around Node.js's built-in HTTP module.
  * At its core, express() returns a function that can handle HTTP requests and responses.
  * 
