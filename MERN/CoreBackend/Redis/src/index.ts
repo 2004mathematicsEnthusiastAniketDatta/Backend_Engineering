@@ -13,6 +13,14 @@ const io = new server.Server(http_server,{
     }
 });//socket server
 io.attach(http_server); //attach socket server to http server
+io.on(
+  "connection", (socket:any) => {
+    console.log(`User Connected: ${socket.id}`);
+    socket.on("disconnect", () => {
+      console.log("User Disconnected", socket.id);
+    });
+  }
+);
 const PORT = process.env.PORT || 8000;
 // interface CacheStore {
 //     totalPageCount: number;
