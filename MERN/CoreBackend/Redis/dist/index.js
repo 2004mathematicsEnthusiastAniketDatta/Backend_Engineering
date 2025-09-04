@@ -74,7 +74,7 @@ app.get('/books/total', async (req, res) => {
         const totalPageCount = response?.data?.data?.data?.reduce((acc, curr) => curr.volumeInfo?.pageCount ? curr.volumeInfo.pageCount + acc : acc, 0);
         // set the cache
         // cacheStore.totalPageCount = Number(totalPageCount);
-        await redis.set('totalPageCount', String(totalPageCount), 'EX', 60); // Expires in 60 seconds
+        await redis.set('totalPageCount', String(totalPageCount), 'EX', 60); // Expires in 60 seconds -> TTL Expires for the key
         console.log('Cache Miss');
         return res.json({ totalPageCount });
     }
