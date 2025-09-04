@@ -37,6 +37,7 @@ const redis = new ioredis_1.default({ host: 'localhost',
     // Add connection timeout
     connectTimeout: 10000,
     commandTimeout: 5000 });
+app.use(Express.static('./public'));
 app.use(async function (req, res, next) {
     const key = 'rate-limit:{_id}' + req.ip;
     const value = await redis.get(key); // 127.0.0.1:6380 > get key o / p:nil
