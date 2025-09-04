@@ -22,7 +22,7 @@ const redis = new ioredis_1.default({ host: 'localhost',
     commandTimeout: 5000 });
 app.use(async function (req, res, next) {
     const key = 'rate-limit:{_id}' + req.ip;
-    const value = await redis.get(key); // 127.0.0.1:6380 > get key o/p:nil
+    const value = await redis.get(key); // 127.0.0.1:6380 > get key o / p:nil
     if (value == null) {
         await redis.set(key, 0); // 127.0.0.1:6380 > set key 0
         await redis.expire(key, 60); // 127.0.0.1:6380 > expire key 60
@@ -67,6 +67,7 @@ app.get('/books/total', async (req, res) => {
         // Check if the totalPageCount is already cached : cache hit 
         const cachedValue = await redis.get('totalPageCount');
         if (cachedValue) {
+            console.log('Cache Hit');
             return res.json({ totalPageCount: Number(await redis.get('totalPageCount')) });
         }
         const response = await axios.get("https://api.freeapi.app/api/v1/public/books?page=1&limit=10&inc=kind%252Cid%252Cetag%252CvolumeInfo&query=tech");
@@ -74,8 +75,8 @@ app.get('/books/total', async (req, res) => {
         // set the cache
         // cacheStore.totalPageCount = Number(totalPageCount);
         await redis.set('totalPageCount', String(totalPageCount), 'EX', 60); // Expires in 60 seconds
-        return res.json({ totalPageCount });
         console.log('Cache Miss');
+        return res.json({ totalPageCount });
     }
     catch (error) {
         console.error("Error fetching data:", error);
