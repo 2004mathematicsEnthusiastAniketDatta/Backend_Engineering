@@ -22,15 +22,15 @@ const redis = new ioredis_1.default({ host: 'localhost',
     commandTimeout: 5000 });
 app.use(async function (req, res, next) {
     const key = 'rate-limit:{_id}' + req.ip;
-    const value = await redis.get(key);
+    const value = await redis.get(key); // 127.0.0.1:6380 > get key o/p:nil
     if (value == null) {
-        await redis.set(key, 0);
-        await redis.expire(key, 60);
+        await redis.set(key, 0); // 127.0.0.1:6380 > set key 0
+        await redis.expire(key, 60); // 127.0.0.1:6380 > expire key 60
     }
     if (Number(value) >= 10) {
         return res.status(429).json({ message: "Too many requests" });
     }
-    await redis.incr(key);
+    await redis.incrby(key, 1); // 127.0.0.1:6380 > incrby key 1
     next();
 });
 app.get("/", (req, res) => {
