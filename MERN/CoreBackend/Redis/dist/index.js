@@ -2,8 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Express = require("express");
 const ioredis_1 = require("ioredis");
+const http = require('http');
 const axios = require("axios");
-const app = Express();
+const server = require('socket.io'); //http server
+const app = Express(); //Express Server for app
+const http_server = http.createServer(app); //wrapper of http server on express app
+const io = new server.Server(http_server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    }
+}); //socket server
+io.attach(http_server); //attach socket server to http server
 const PORT = process.env.PORT || 8000;
 // interface CacheStore {
 //     totalPageCount: number;
@@ -83,7 +94,10 @@ app.get('/books/total', async (req, res) => {
         return res.status(500).json({ error: "Failed to fetch data" });
     }
 });
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+http_server.listen(PORT, () => {
+    console.log(`httpServer is running on port ${PORT}`);
 });
 //# sourceMappingURL=index.js.map
