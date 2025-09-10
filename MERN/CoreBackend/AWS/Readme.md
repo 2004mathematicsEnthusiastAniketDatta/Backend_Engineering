@@ -43,3 +43,6 @@ Amazon Web Services (AWS) is the world's most comprehensive and broadly adopted 
 - Join AWS communities and forums
 
 Remember: Cloud engineering is about solving business problems efficiently and securely.
+
+## video
+<img src='/home/aniketdatta/Backend_Engineering/MERN/CoreBackend/AWS/Video.png'/>
