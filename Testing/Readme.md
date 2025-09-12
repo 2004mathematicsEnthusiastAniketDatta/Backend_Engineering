@@ -17,7 +17,7 @@ Ans:  The session covers the bird eye overview of functional testing and non fun
 
 <img src='/home/aniketdatta/Backend_Engineering/Testing/Testing.png'/>
 
-Developers -> Developing and building softwares
+Developers -> Developing and building softwares + Unit Testing + Parts of Integration Testing + Parts of System Testing 
 Testing -> breaking softwares
 
 ## Levels of Testing:
