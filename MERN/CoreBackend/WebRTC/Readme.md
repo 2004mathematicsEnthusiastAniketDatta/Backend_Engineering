@@ -277,3 +277,19 @@ Remote SDP is the session description received from the remote peer that describ
 - A sets the answer as this is the remote description
 - Connection established , exchanged data channel.
  
+ # WebRTC Pros
+ - P2P is great! low latency for high bandwidth content
+ - Standardized API I don't have to build my own
+ # WebRTC Cons
+ - Maintaining STUN and TURN servers
+ - Peer to Peer falls apart in case of multiple participants
+ # Media API
+ - getUserMedia to access microphone , video camera
+ - RTCPConnection .addTrack(stream)
+ - https://www.html5rocks.com/en/tutorials/webrtc/basics
+# onIceCandidate and addIceCandidate
+- To maintain the connection as new candidates come and go.
+- onIceCandidates tells user there is a new candidate after the SDP has already been created.
+- The candidate is signaled and sent to the other party
+- The other party uses addiceCandidate to add to the SDP
+
