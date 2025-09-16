@@ -1,4 +1,4 @@
-//set offer const offer = ...
+//set offer const offer = <generated offer sdp from peerA_final.js>
 const remoteConnection = new RTCPeerConnection()
 
 remoteConnection.onicecandidate = e =>  {
