@@ -1,0 +1,28 @@
+{
+    "name": "custom-turn-server",
+    "version": "1.0.0",
+    "description": "A custom TURN server implementation",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "turn",
+        "webrtc",
+        "server",
+        "stun",
+        "relay"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "node-turn": "^0.8.3",
+        "dgram": "^1.0.1",
+        "crypto": "^1.0.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1"
+    }
+}
