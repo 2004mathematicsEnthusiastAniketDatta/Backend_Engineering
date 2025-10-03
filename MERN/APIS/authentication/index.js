@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 // import userRoutes from './routes/users.js';
 // import cookieParser from 'cookie-parser';
 import cors from 'cors';
+//models
+
 // Load environment variables from .env file
 dotenv.config();
 // Port from environment variables or default to 5000
