@@ -43,9 +43,10 @@ const PORT = process.env.PORT || 5000;
 // app.get("/api/products", (req, res) => {
 //   res.json({ products: ["product1", "product2", "product3"] });
 // });
-
+//db
 // connect to db
 connectDB();
+//routes
 app.use('/api/v1/users/', userRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
