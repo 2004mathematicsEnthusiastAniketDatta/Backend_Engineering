@@ -2,7 +2,7 @@ import express from 'express';
 // import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 // import authRoutes from './routes/auth.js';
- import userRoutes from './routes/user.routes.js';
+import userRoutes from './routes/user.routes.js';
 // import cookieParser from 'cookie-parser';
 import cors from 'cors';
 //models
