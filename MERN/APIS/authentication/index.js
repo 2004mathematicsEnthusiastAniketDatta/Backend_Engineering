@@ -47,7 +47,7 @@ const PORT = process.env.PORT || 5000;
 // connect to db
 connectDB();
 //routes
-app.use('/api/v1/users/', userRoutes);
+app.use('/api/v1/users', userRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
