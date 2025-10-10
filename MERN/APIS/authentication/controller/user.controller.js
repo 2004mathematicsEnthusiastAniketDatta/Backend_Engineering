@@ -12,14 +12,15 @@ const registerUser = async (req, res) => {
   // save token in database
   // send token as email to user
   // send success status to user
-
+  // Destructure the data from req.body
   const { name, email, password } = req.body;
+  // Validate the data
   if (!name || !email || !password) {
     return res.status(400).json({
       message: "All fields are required",
     });
   }
-
+  // Check if user already exists
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -27,14 +28,14 @@ const registerUser = async (req, res) => {
         message: "User already exists",
       });
     }
-
+// Create a user in database
     const user = await User.create({
       name,
       email,
       password,
     });
     console.log(user);
-
+//if user not created 
     if (!user) {
       return res.status(400).json({
         message: "User not registered",

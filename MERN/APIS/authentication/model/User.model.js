@@ -1,24 +1,43 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-
-
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role:{
-        type:String,
-        enum:['user','admin'],
-        default:'user'
+const userSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: String,
+    password: String,
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
-    isVerified : { type: Boolean, default: false },
-    verificationToken: { type: String },
-    PasswordResetToken: { type: String },
-    PasswordResetExpires: { type: Date },
-    // createdAt: { type: Date, default: Date.now },
-    // updatedAt: { type: Date, default: Date.now },
-    // Add any other fields you need, e.g., profile picture, bio, etc.
-    // Financial data is already handled in paise in India to avoid floating point issues
-}, { timestamps: true });
-const User= mongoose.model("User", userSchema);
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+const User = mongoose.model("User", userSchema);
+
 export default User;
+
