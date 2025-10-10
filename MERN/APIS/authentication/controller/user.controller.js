@@ -43,7 +43,7 @@ const registerUser = async (req, res) => {
   // save token in database
     await user.save();
   // send token as email to user
-    //send email
+  //send email
     const transporter = nodemailer.createTransport({
       host: process.env.MAILTRAP_HOST,
       port: process.env.MAILTRAP_PORT,
@@ -53,7 +53,7 @@ const registerUser = async (req, res) => {
         pass: process.env.MAILTRAP_PASSWORD,
       },
     });
-
+// what to send email from 
     const mailOption = {
       from: process.env.MAILTRAP_SENDEREMAIL,
       to: user.email,
@@ -62,7 +62,6 @@ const registerUser = async (req, res) => {
       ${process.env.BASE_URL}/api/v1/users/verify/${token}
       `,
     };
-
     await transporter.sendMail(mailOption);
   // send success status to user
     res.status(201).json({
