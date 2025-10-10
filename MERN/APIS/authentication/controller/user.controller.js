@@ -1,21 +1,16 @@
 import User from "../model/User.model.js";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 const registerUser = async (req, res) => {
-  // get data
-  //validate
-  // check if user already exists
-  // create a user in database
-  //create a verification token
-  // save token in database
-  // send token as email to user
-  // send success status to user
+  //get data from req.body
   // Destructure the data from req.body
   const { name, email, password } = req.body;
   // Validate the data
   if (!name || !email || !password) {
+   // empty fields
     return res.status(400).json({
       message: "All fields are required",
     });
@@ -35,19 +30,19 @@ const registerUser = async (req, res) => {
       password,
     });
     console.log(user);
-//if user not created 
+//if user not registered , create a new user 
     if (!user) {
       return res.status(400).json({
         message: "User not registered",
       });
     }
-
+//create a verification token
     const token = crypto.randomBytes(32).toString("hex");
     console.log(token);
     user.verificationToken = token;
-
+  // save token in database
     await user.save();
-
+  // send token as email to user
     //send email
     const transporter = nodemailer.createTransport({
       host: process.env.MAILTRAP_HOST,
@@ -69,7 +64,7 @@ const registerUser = async (req, res) => {
     };
 
     await transporter.sendMail(mailOption);
-
+  // send success status to user
     res.status(201).json({
       message: "User registered successfully",
       success: true,
