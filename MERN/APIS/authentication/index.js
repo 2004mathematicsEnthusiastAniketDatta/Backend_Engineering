@@ -1,7 +1,7 @@
 import express from 'express';
 // import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-// import authRoutes from './routes/auth.js';
+// import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 // import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -34,15 +34,15 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.get("/api", (req, res) => {
-  res.json({ message: "API is working!" });
-});
-app.get("/api/users", (req, res) => {
-  res.json({ users: ["user1", "user2", "user3"] });
-});
-app.get("/api/products", (req, res) => {
-  res.json({ products: ["product1", "product2", "product3"] });
-});
+// app.get("/api", (req, res) => {
+//   res.json({ message: "API is working!" });
+// });
+// app.get("/api/users", (req, res) => {
+//   res.json({ users: ["user1", "user2", "user3"] });
+// });
+// app.get("/api/products", (req, res) => {
+//   res.json({ products: ["product1", "product2", "product3"] });
+// });
 //db
 // connect to db
 connectDB();

@@ -13,5 +13,4 @@ export default connectDB;
 // see 
 // database creation 
 // ip whitelisting in mongoDB in testing and server's ip in production
-// username: admin
-// password: Admin@123
+//database is always in another continent
