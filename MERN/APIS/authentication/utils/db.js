@@ -13,4 +13,4 @@ export default connectDB;
 // see 
 // database creation 
 // ip whitelisting in mongoDB in testing and server's ip in production
-//database is always in another continent
+//Assume , database is always in another continent
