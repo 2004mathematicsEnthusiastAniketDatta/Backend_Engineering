@@ -1,8 +1,8 @@
-import User from "../model/User.model.js";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import User from "../model/User.model.js"; //User mongoose.model for the DB (like a row in SQL) here refers tpo mongodb document
+import crypto from "crypto"; //crypto is a built-in module in nodejs to generate random bytes
+import nodemailer from "nodemailer"; //nodemailer is a library to send emails
+import bcrypt from "bcryptjs"; //bcryptjs is a library to hash passwords
+import jwt from "jsonwebtoken";//jsonwebtoken is a library to generate and verify json web tokens
 const registerUser = async (req, res) => {
   // get data
   //validate
@@ -12,39 +12,49 @@ const registerUser = async (req, res) => {
   // save token in database
   // send token as email to user
   // send success status to user
-
+  // data is always obtained from req.body , req.params and req.cookies in sixty percent scenarios
+  //destructure name, email, password from req.body
   const { name, email, password } = req.body;
+  //validate data - check if all fields are present otherwise return error
   if (!name || !email || !password) {
     return res.status(400).json({
       message: "All fields are required",
     });
   }
-
+ // interacting with db means we should try catch and async await
+ // db may be in another continent 
   try {
+    // check if user already exists
+    // findOne is a mongoose method to find a single document in the collection
+    // if user exists, return error
     const existingUser = await User.findOne({ email });
+    // if user exists, return error
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists",
       });
     }
-
+   // create a user in database
     const user = await User.create({
       name,
       email,
       password,
     });
+    //log the user created
     console.log(user);
-
+    //if user not found , return 400 status code with json message
     if (!user) {
       return res.status(400).json({
         message: "User not registered",
       });
     }
-
+   // create a verification token -> here 32 bytes random hex string
     const token = crypto.randomBytes(32).toString("hex");
+   // print the token
     console.log(token);
+    // save token in database
     user.verificationToken = token;
-
+   // save the user with the verification token
     await user.save();
 
     //send email
@@ -57,7 +67,7 @@ const registerUser = async (req, res) => {
         pass: process.env.MAILTRAP_PASSWORD,
       },
     });
-
+   // design from , to subject text and url
     const mailOption = {
       from: process.env.MAILTRAP_SENDEREMAIL,
       to: user.email,
@@ -66,14 +76,16 @@ const registerUser = async (req, res) => {
       ${process.env.BASE_URL}/api/v1/users/verify/${token}
       `,
     };
-
+    //wait for the transporter to complete the mail related task
+    // send mail with defined transport object
     await transporter.sendMail(mailOption);
-
+   // send success status to user
     res.status(201).json({
       message: "User registered successfully",
       success: true,
     });
   } catch (error) {
+    // if error in try block, catch this and return error
     res.status(400).json({
       message: "User not registered ",
       error,
@@ -81,7 +93,7 @@ const registerUser = async (req, res) => {
     });
   }
 };
-
+// verify user
 const verifyUser = async (req, res) => {
   //get token from url
   //validate
@@ -91,28 +103,39 @@ const verifyUser = async (req, res) => {
   // remove verification token
   // save
   //return response
-
+//destructure token from req.params
   const { token } = req.params;
+  // print the token collected from the params of the request being sent to verify user api
+  // ${process.env.BASE_URL}/api/v1/users/verify/${token} ${token} is the present in the params of the request
+  //console.log the token
+  // if no token, return error
   console.log(token);
+  // if token not present, return error
   if (!token) {
+    //400 bad request status code for invalid token
     return res.status(400).json({
       message: "Invalid token",
     });
   }
+  // db interaction
   try {
     console.log("verification started");
-
+    // find user based on token
     const user = await User.findOne({ verificationToken: token });
-
+   // if no user found, return error
     if (!user) {
+      //400 status code for invalid token
       return res.status(400).json({
         message: "Invalid token",
       });
     }
+    // set isVerified field to true once user is found
     user.isVerified = true;
+    // remove verification token
     user.verificationToken = undefined;
+    // save the user
     await user.save();
-
+   // return success response
     res.status(200).json({
       message: "User verified successfully",
       success: true,
@@ -127,26 +150,31 @@ const verifyUser = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  // get email , password from req.body
+  
   const { email, password } = req.body;
-
+  // if not present return error
   if (!email || !password) {
     return res.status(400).json({
       message: "All fields are required",
     });
   }
-
+  // mongoose model interacts with db in another continent 
   try {
+    // find user based on email
     const user = await User.findOne({ email });
+    // if no user found, return error
     if (!user) {
+      // 400 status code for bad request
       return res.status(400).json({
         message: "Invalid email or password",
       });
     }
-
+    // compare password in the req.body  with hashed password from the mongoose.model schema in db
     const isMatch = await bcrypt.compare(password, user.password);
-
+   // print whether password matches or not
     console.log(isMatch);
-
+   // if password does not match, return error
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid email or password",
@@ -155,7 +183,7 @@ const login = async (req, res) => {
 
     // Decode, verify, and generate JSON Web Tokens, which are an open, industry standard RFC 7519 method for representing claims 
     // securely between two parties.
-
+    // JWT signing and generation
     const token = jwt.sign(
       { id: user._id, role: user.role },
 
@@ -164,13 +192,15 @@ const login = async (req, res) => {
         expiresIn: "24h",
       }
     );
+    // options for cookie
     const cookieOptions = {
       httpOnly: true,
       secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     };
+    // set cookie in the response
     res.cookie("token", token, cookieOptions);
-
+   // success response with token and user details except password
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -183,43 +213,58 @@ const login = async (req, res) => {
     });
   } catch (error) {}
 };
-
+// controller for getting profile based on req.user.id set in the auth middleware
 const getMe = async (req, res) => {
+  // get user from req.user.id
+  // find user based on id
+  // if not found return error
   try {
+    // find user based on id and exclude password field with select("-password")
+    // req.user is set in the auth middleware after verifying the token and extracting the payload from the token
+    // req.user.id is the id of the user extracted from the token payload
+    // select("-password") excludes the password field from the user object
+    // print the user found
     const user = await User.findById(req.user.id).select("-password");
     console.log(user);
-
+   // if no user found, return error
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "User not found",
       });
     }
-
+   // success response with user details except password
     res.status(200).json({
       success: true,
       user,
     });
   } catch (error) {
+    // if error in try block, catch this and return error
     console.log("Error in get me", error);
   }
 };
 const logoutUser = async (req, res) => {
   try {
+    // clear cookie
     res.cookie("token", "", {});
+    // success response
     res.status(200).json({
       success: true,
       message: "Logged out successfully",
     });
+    // if error in try block, catch this and return error
   } catch (error) {}
 };
 const forgotPassword = async (req, res) => {
-  try {
-    //get email
-    // find user based on email
-    // reset token + reset expiry => Date.now() + 10 * 60 * 1000 => user.save()
-    // send mail => design url
-  } catch (error) {}
+      // const {email} = req.body;
+  // try {
+  //   //get email
+  //   // find user based on email
+  //   // reset token + reset expiry => Date.now() + 10 * 60 * 1000 => user.save()
+  //   // send mail => design url
+
+  //   // find user based on email
+  // } catch (error) {}
 };
 const resetPassword = async (req, res) => {
   try {
