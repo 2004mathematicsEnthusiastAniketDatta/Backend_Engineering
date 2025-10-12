@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'http://friendly-space-invention-76gj6g6779v2wx9r-5000.app.github.dev',
+    origin: process.env.BASE_URL,
     credentials: true,
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -22,27 +22,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Cohort!");
 });
 
-app.get("/api", (req, res) => {
-  res.send("api is running!");
+app.get("/hitesh", (req, res) => {
+  res.send("Hitesh");
 });
 
-app.get("/api/v1", (req, res) => {
-  res.send("v1 is running!");
+app.get("/piyush", (req, res) => {
+  res.send("Piyush!");
 });
-app.get("/api/v1/users", (req, res) => {
-  res.send("users is running!");
-});
+
 //connect to db
 db();
 
 //user routes
-// Mount user routes at /api/v1 to avoid duplicating "/users" if the router already includes that segment
 app.use("/api/v1/users", userRoutes);
 
 app.listen(port, () => {

@@ -153,7 +153,8 @@ const login = async (req, res) => {
       });
     }
 
-    //
+    // Decode, verify, and generate JSON Web Tokens, which are an open, industry standard RFC 7519 method for representing claims 
+    // securely between two parties.
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
