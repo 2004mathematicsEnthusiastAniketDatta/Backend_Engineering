@@ -8,7 +8,7 @@ import {
 } from "../controller/user.controller.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 const router = express.Router();
-
+//isLoggedIn() executes and isLoggedIn is an event 
 router.post("/register", registerUser);
 router.get("/verify/:token", verifyUser);
 router.post("/login", login);
