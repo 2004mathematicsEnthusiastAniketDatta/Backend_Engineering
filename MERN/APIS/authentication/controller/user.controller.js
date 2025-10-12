@@ -256,15 +256,63 @@ const logoutUser = async (req, res) => {
   } catch (error) {}
 };
 const forgotPassword = async (req, res) => {
-      // const {email} = req.body;
-  // try {
-  //   //get email
-  //   // find user based on email
-  //   // reset token + reset expiry => Date.now() + 10 * 60 * 1000 => user.save()
-  //   // send mail => design url
+  const { email } = req.body;
 
-  //   // find user based on email
-  // } catch (error) {}
+  if (!email) {
+    return res.status(400).json({
+      message: "Email is required",
+    });
+  }
+
+  try {
+    // find user based on email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        message: "User with this email does not exist",
+      });
+    }
+
+    // generate reset token and expiry (10 minutes)
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    await user.save();
+
+    // send reset email
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAILTRAP_HOST,
+      port: process.env.MAILTRAP_PORT,
+      secure: false,
+      auth: {
+        user: process.env.MAILTRAP_USERNAME,
+        pass: process.env.MAILTRAP_PASSWORD,
+      },
+    });
+
+    const mailOption = {
+      from: process.env.MAILTRAP_SENDEREMAIL,
+      to: user.email,
+      subject: "Reset your password",
+      text: `You requested a password reset. Please click the link below to reset your password:
+${process.env.BASE_URL}/api/v1/users/reset-password/${token}
+If you did not request this, please ignore this email. This link will expire in 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOption);
+
+    res.status(200).json({
+      message: "Password reset email sent",
+      success: true,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Error sending password reset email",
+      error,
+      success: false,
+    });
+  }
 };
 const resetPassword = async (req, res) => {
   try {
