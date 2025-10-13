@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const isLoggedIn = async (req, res, next) => {
+ // how  
  // check if cookies are present
  //check if token is present in cookies 
     try {
