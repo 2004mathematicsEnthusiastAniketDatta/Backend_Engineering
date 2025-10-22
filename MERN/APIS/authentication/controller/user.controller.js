@@ -316,25 +316,58 @@ If you did not request this, please ignore this email. This link will expire in 
   }
 };
 const resetPassword = async (req, res) => {
-  try {
-    //collect token from params
-    // password from req.body
-    const { token } = req.params;
-    const { password, confPassword } = req.body;
+  // collect token from params and passwords from body
+  const { token } = req.params;
+  const { password, confPassword } = req.body;
 
-    if (password === confPassword) {
+  if (!token) {
+    return res.status(400).json({ message: "Invalid or missing token" });
+  }
+
+  if (!password || !confPassword) {
+    return res.status(400).json({ message: "Password and confirmation are required" });
+  }
+
+  if (password !== confPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({ message: "Password must be at least 8 characters long" });
+  }
+
+  try {
+    // find user with valid (non-expired) reset token
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired password reset token" });
     }
 
-    try {
-      const user = await User.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-      });
-      // set password in user
-      // resetToken, resetExpiry => reset
-      // save
-    } catch (error) {}
-  } catch (error) {}
+    // hash the new password and update user record
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password has been reset successfully",
+    });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while resetting password",
+    });
+  }
 };
 
 export {
