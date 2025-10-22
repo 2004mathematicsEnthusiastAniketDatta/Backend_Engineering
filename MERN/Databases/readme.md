@@ -1438,3 +1438,6 @@ A comprehensive hospital management system designed for multi-specialty hospital
 - Reports track various Hospital metrics (many-to-one)
 - Comprehensive audit trails for regulatory compliance
 - Role-based access control for data security
+
+
+

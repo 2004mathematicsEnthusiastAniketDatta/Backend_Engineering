@@ -21,5 +21,6 @@ router.post("/login", login);
 router.get("/profile", isLoggedIn, getMe);
 router.get("/logout", isLoggedIn, logoutUser);
 router.post("/forgotpassword", forgotPassword);
+router.post("/resetpassword/:token", forgotPassword);
 //export router
 export default router;

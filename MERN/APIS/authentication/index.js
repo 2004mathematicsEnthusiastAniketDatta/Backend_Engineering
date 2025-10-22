@@ -46,12 +46,12 @@ app.get("/", (req, res) => {
   res.send("Cohort!");
 });
 
-app.get("/hitesh", (req, res) => {
-  res.send("Hitesh");
+app.get("/api", (req, res) => {
+  res.send("API is working!");
 });
 
-app.get("/piyush", (req, res) => {
-  res.send("Piyush!");
+app.get("/api/v1/users", (req, res) => {
+  res.send("User!");
 });
 
 //connect to db
