@@ -120,6 +120,7 @@ const verifyUser = async (req, res) => {
   // db interaction
   try {
     console.log("verification started");
+    console.log("verification token: ", token);
     // find user based on token
     const user = await User.findOne({ verificationToken: token });
    // if no user found, return error
