@@ -1,0 +1,81 @@
+# Node / JavaScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json.debug-*    # transient lock debug files
+
+# Logs
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment / secrets
+.env
+.env.local
+.env.test
+.env.production.local
+secrets/
+*.key
+*.pem
+credentials.json
+
+# Build / output
+dist/
+build/
+out/
+public/build/
+.next/
+.nuxt/
+.svelte-kit/
+.expo/
+.cache/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+.nyc_output/
+coverage-final.json
+
+# Databases & dumps
+dump/
+dumps/
+*.dump
+*.bson
+*.sql
+*.gz
+*.tar
+*.zip
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+mongod.lock
+*.archive
+
+# Docker (local overrides / envs)
+docker-compose.override.yml
+docker-compose.*.local.yml
+*.env.docker
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+bower_components/
+*.orig
+*.rej
