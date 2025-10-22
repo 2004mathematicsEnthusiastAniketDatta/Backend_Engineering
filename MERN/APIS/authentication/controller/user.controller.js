@@ -297,7 +297,7 @@ const forgotPassword = async (req, res) => {
       to: user.email,
       subject: "Reset your password",
       text: `You requested a password reset. Please click the link below to reset your password:
-${process.env.BASE_URL}/api/v1/users/reset-password/${token}
+${process.env.BASE_URL}/api/v1/users/resetpassword/${token}
 If you did not request this, please ignore this email. This link will expire in 10 minutes.`,
     };
 
