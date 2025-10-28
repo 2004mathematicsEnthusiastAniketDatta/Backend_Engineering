@@ -43,7 +43,7 @@ app.use(cookieParser());
 const port = process.env.PORT || 4000;
 //routes set up for http methods
 app.get("/", (req, res) => {
-  res.send("Cohort!");
+  res.send("Hello World!");
 });
 
 app.get("/api", (req, res) => {
