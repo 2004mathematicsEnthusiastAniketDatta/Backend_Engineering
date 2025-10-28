@@ -16,10 +16,10 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4000; //can be in the form of arrays
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.json({ message: "Server is running" });
 });
 
 app.listen(port, () => {
