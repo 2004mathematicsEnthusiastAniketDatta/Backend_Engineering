@@ -31,9 +31,23 @@ Overall, while access tokens provide a flexible and scalable method for managing
 //hex string tokens may not be along with data
 const userSchema = new mongoose.Schema(
   {
-    name: String,
-    email: String,
-    password: String,
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email:{
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password:{
+      type: String,
+      required: true,
+      minlength: 6,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
