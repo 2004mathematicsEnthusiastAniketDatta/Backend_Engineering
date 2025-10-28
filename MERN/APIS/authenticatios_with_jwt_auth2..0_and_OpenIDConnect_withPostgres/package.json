@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon --watch . index.js",
     "test": "npx playwright test --headed",
     "postversion": "git push && git push --tags",
     "test:chrome": "npx playwright test --project=chromium --headed",
