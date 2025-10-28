@@ -3,6 +3,7 @@ import crypto from "crypto"; //crypto is a built-in module in nodejs to generate
 import nodemailer from "nodemailer"; //nodemailer is a library to send emails
 import bcrypt from "bcryptjs"; //bcryptjs is a library to hash passwords
 import jwt from "jsonwebtoken";//jsonwebtoken is a library to generate and verify json web tokens
+//write the utilities in different utilities function
 const registerUser = async (req, res) => {
   // get data
   //validate
