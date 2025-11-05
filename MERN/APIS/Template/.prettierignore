@@ -1,45 +1,13 @@
-# basic
 node_modules
+build
+dist
+coverage
+public
+static
 .env
-# Build / output directories
-dist/
-build/
-out/
-coverage/
-storybook-static/
-public/
-
-# Framework caches
-.next/
-.next/cache/
-.nuxt/
-.cache/
-.parcel-cache/
-
-# Generated bundles, maps and logs
-*.min.js
-*.bundle.js
-*.map
 *.log
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Editor / IDE
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Optional: lockfiles (if you don't want Prettier to format them)
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
+.next
+.vercel
+.DS_Store

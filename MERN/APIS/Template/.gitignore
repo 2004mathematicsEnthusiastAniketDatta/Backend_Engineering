@@ -1,192 +1,58 @@
-# ----------------------
-# OS / Editor
-# ----------------------
-# Windows / macOS
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-.DS_Store
-.AppleDouble
-.LSOverride
+# Node.js dependencies
+node_modules/
 
-# Swap / temp files
-*~
-*.swp
-*.swo
-*.tmp
-
-# IDEs / editors
-.vscode/
-.idea/
-*.iml
-*.sublime-workspace
-*.sublime-project
-*.code-workspace
-
-# ----------------------
-# Secrets / environment
-# ----------------------
-# Local env files and secrets
-.env
-.env.*.local
-.env.local
-secrets/
-*.pem
-*.key
-*.crt
-
-# Keep example files in repo
-!.env.example
-
-# ----------------------
-# Logs / runtime
-# ----------------------
-logs/
-*.log
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-debug.log
-*.pid
-*.seed
-*.pid.lock
 
-# ----------------------
-# Node.js
-# ----------------------
-node_modules/
-.next/
+# Environment variables
+.env*
+.env.*.local
+
+# Build outputs
 dist/
 build/
-
-# ----------------------
-# Python
-# ----------------------
-__pycache__/
-*.py[cod]
-*$py.class
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-.pytest_cache/
-*.egg-info/
-.eggs/
-dist/
-build/
-
-# ----------------------
-# Java / JVM
-# ----------------------
-*.class
-target/
 out/
-*.jar
-*.war
-*.ear
-*.class
-
-# Gradle
-.gradle/
-build/
-
-# Maven
-dependency-reduced-pom.xml
-release.properties
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.next
-.mvn/timing.properties
-
-# ----------------------
-# .NET
-# ----------------------
-bin/
-obj/
-*.user
-*.suo
-*.cache
-*.dbmdl
-*.pdb
-.vs/
-
-# ----------------------
-# Go
-# ----------------------
-bin/
-pkg/
-coverage.out
-
-# ----------------------
-# Rust
-# ----------------------
-target/
-
-# ----------------------
-# Docker / containers
-# ----------------------
-docker-compose.override.yml
-docker-compose.*.yml
-**/Dockerfile.*
-*.dockerignore
-
-# ----------------------
-# Terraform
-# ----------------------
-.terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-override.tf
-override.tf.json
-.terraform.lock.hcl
-
-# ----------------------
-# CI / test / coverage
-# ----------------------
+.next/
+.next/cache/
 coverage/
-coverage.*
-lcov.info
-test-results/
-junit.xml
-reports/
-
-# ----------------------
-# Build / packaging
-# ----------------------
-dist/
 tmp/
 temp/
-build/
-*.tar.gz
-*.zip
+.cache/
 
-# ----------------------
-# Misc binaries / artifacts
-# ----------------------
-*.exe
-*.dll
-*.so
-*.dylib
-*.lib
-*.class
+# Static files (runtime uploads)
+uploads/
+public/static/
+public/uploads/
 
-# ----------------------
-# Locks (if you intentionally commit, remove)
-# ----------------------
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# End of .gitignore
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Test outputs, coverage
+.nyc_output/
+
+# Vercel/Next.js build
+.vercel/
+
+# Miscellaneous
+*.tgz
+*.swp
+*.bak
+*.tmp
+lib/
+.eslintcache
+debug.log
