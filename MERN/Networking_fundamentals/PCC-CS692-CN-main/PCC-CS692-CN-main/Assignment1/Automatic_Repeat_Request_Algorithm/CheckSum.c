@@ -43,7 +43,20 @@
 // VLANs: a way to logically segment a physical network into separate broadcast domains, allowing devices to be grouped by function or security requirements regardless of their physical location.
 //1Q tagging: the standard method for implementing Virtual LANs (VLANs) by adding a 4-byte "tag" to Ethernet frames, allowing switches to identify and separate traffic for different VLANs over a single physical link (trunk).
 //Collision: Network Collisions
-//Broadcasting and Broadcast Domains. 
+//Broadcasting and Broadcast Domains.
+//Static IP and Dynamic IP: DHCP provides a range of IPs which are required to assign dynamic IPs to devices connected.
+//class A IPv4: 0-127 : 255.0.0.0 : Big organizations
+//class B 128-191: 255.255.0.0 : Medium networks
+//class C: 192-223: 255.255.255.0 : Small office/home
+//Class D: 224-239: Multicast: Group Messaging
+//class E: 240-255 : Experimental : Labs/Testing
+//IP headers: Source IP, Destination IP , Time To Live , Protocol -UDP,TCP , CheckSum
+//ARP and Link Resolution: ARP Request/ Reply Mechanism, ARP table , Proxy and Gratuitious ARP
+//ARP spoofing
+//managed switch,unmanaged switch
+// A network access port connects end-user devices to a single virtual LAN (VLAN) using untagged traffic, ensuring data stays within that specific VLAN. The vehicle "Accessport" is a performance tuning tool used for ECU flashing, data logging, and reading trouble codes
+//Access port: a specific type of network switch port, or a handheld device for modifying a vehicle's engine control unit (ECU).
+//Trunk Port:a network switch port configured to carry traffic for multiple VLANs (Virtual Local Area Networks) over a single physical link.
 /**
  * Adds two binary strings and returns the result
  * @param binary1 - First binary string
