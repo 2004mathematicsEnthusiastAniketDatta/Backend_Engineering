@@ -2,7 +2,48 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+//Flow of data
+// Network Visibility: ISPs , Routers, Switches ,
+// Hubs , Proxies , Servers,Visibility of network
+// Ransome
+// Bandwidth and Physical Layer
+//Cables
+//Ransomeware attacks
+//The main organizations responsible for coordinating the global Internet Protocol (IP) address
+// space, Domain Name System (DNS) data, and issuing IPs are the Internet Corporation for Assigned Names 
+//and Numbers (ICANN) and its functional body, the Internet Assigned Numbers Authority (IANA).
+//ARPANET is a govt. like authority to internet presently
+// Multi task communication in networks as in video call where you can video call a friend and message another person
+//surf internet and browse alongwith
+//careful management
+//Simplex Network : One way Network , Half Duplex Network: Sender can send only at a time and 
+//reciever will recieve only at another point of time.
+//Duplex Network: Sender can send and reciever simaltaneosuly at the same time 
+//Types of network: Local Area Network , Metropolitan Area Network, Wide Area Network, Personal Area Network.
+//Data Transfer terms: 
+//Latency:the time delay for a data packet to travel from its source to its destination across a network ,
+//Bandwidth:the maximum rate at which data can be transferred over a network connection in a specific time, measured in bits per second (bps),
+//Throughput:the actual rate at which data successfully travels across a network in a given time, measured in bits or bytes per second, 
+//Jitter: inconsistent delay or variation in arrival time between data packets sent over a network
+//Client-Server model
+// Peer to Peer P2P connections
+//Encapsulation: the process of adding control information, in the form of headers and sometimes trailers, to data as it moves down the layers of a protocol stack (like the TCP/IP or OSI model)
+//Deencapsulation: The process of unwrapping and stripping control information headers and trailers
+//Copper Wire: 100MB data transfer smooth latency
+//Fiber cables: 10GB data transfer Total Internal Reflection
+//Coaxial Cables:10-100GB data transfer
+//Transceivers: RJ45 Port LAN ports, RJ11, SPF connector, SFP , SFP+, QSFP
+//Link Speeds: a technology that sends both electrical power and data over a single Ethernet cable.
+//Power Over Ethernet:a technology that sends both electrical power and data over a single Ethernet cable.
+// cat 6e cables:2000-3000 systems,cat 6 cables: 1500-2500 systems,cat 5 cables,cat cables
+//Ethernet Frame and MAC address: Destination MAC , Source MAC, Payload: Data in chunks and streams encrypted over network
+//CRC - error check, Errror detection and correction
+//Switching Logic-Smart Traffic Control : CAM tables: MAC address- Port Tables, Learning, Flooding
+//Spanning Tree Protocol (STP): In computer networking, STP primarily refers to the Spanning Tree Protocol, a Layer 2 protocol (IEEE 802.1D) that prevents network loops in Ethernet networks by creating a single, loop-free logical path, even with redundant physical links, stopping broadcast storms and ensuring stable data flow, while modern networks often use faster variations like Rapid STP (RSTP).
+// VLANs: a way to logically segment a physical network into separate broadcast domains, allowing devices to be grouped by function or security requirements regardless of their physical location.
+//1Q tagging: the standard method for implementing Virtual LANs (VLANs) by adding a 4-byte "tag" to Ethernet frames, allowing switches to identify and separate traffic for different VLANs over a single physical link (trunk).
+//Collision: Network Collisions
+//Broadcasting and Broadcast Domains. 
 /**
  * Adds two binary strings and returns the result
  * @param binary1 - First binary string
