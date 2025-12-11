@@ -1,0 +1,298 @@
+Router Basics and  Packet Forwarding:
+Network Address Translation: Private IP to Public IP for communication in the internet.
+Port Address Translation: a network switch port configured to carry traffic for multiple VLANs (Virtual Local Area Networks) over a single physical link.
+//read
+Address Translation: Address translation is the process of converting one type of address into another depending on requirements.(No. of hosts , no. of networks).
+Routing Fundamentals:
+//read
+- Destination network
+- Next hop
+- Interface
+- Metric / cost
+Static Routing: manual routing, Dynamic Routing: BGP , Routing Internet Protocol , OSPF
+Route Metrics: cost of route minimization efficiency 
+Administrative Distance: Address translation is the process of converting one type of address into another.
+Interior Routing Protocols:
+- OSPF: 
+   -- Purpose: fast and efficient 
+   -- Areas: Large Network Areas in Network segmentation
+   -- Link-State Advertisement: a core message in link-state routing protocols like OSPF, where routers send small packets describing their directly connected links (status, cost, IP info) to build a complete network map (Link-State Database or LSDB).
+   -- Designated/Backup Designated Router: unneccesary flooding minimization 
+- Enhanced Interior Gateway Routing Protocol:
+   -- Type: Link advertisement + Distance Vector
+- Intermediate System to Intermediate System:
+   -- Communication
+   -- Large enterprises
+   -- Required Routing where there are lot of carrier networks and backend systems having huge data.
+   -- Features: Hierarchical , scalable and reliable.
+- Border Gateway Protocol : 
+   --the core internet routing protocol that exchanges network reachability information between different Autonomous Systems (AS) , router router communication and find shortest path to reach Destination
+   --Global network connection
+- BGP attributes and Path Selection:
+    -- Autonomous System Path: lists the sequence of Autonomous Systems a route has traversed, used for loop prevention and path selection where shorter AS paths are preferred
+    -- Local Preference: an attribute used by routers within an AS to determine the route preference locally, with higher values being preferred over lower values for path selection
+    -- Multi-exit Discriminator: an attribute used to indicate the preferred entry point into an Autonomous System when multiple external paths are available, with lower values being preferred over higher values
+    -- Communities: a tagging mechanism to group routes and apply consistent BGP policies and routing rules across the network for smooth transmission sharing and resource sharing.
+- Path Selection Process: 
+     -- Highest Local Preference
+     -- Shortest Autonomous System Path
+     -- Lowest Multi-exit Discriminator
+     -- Tie-breaker : Router ID
+- Prefix filtering and Resource Public Key Infrastructure:
+    -- Prefix Filtering: a security mechanism that validates route advertisements by checking if the announced IP prefixes are actually authorized by the originating Autonomous System, preventing route hijacking and unauthorized network advertisements
+    -- RPKI (Resource Public Key Infrastructure): a framework that uses cryptographic signatures to validate the ownership and authorization of IP address ranges and AS numbers, ensuring that only legitimate ASs can announce specific IP prefixes and protecting against BGP route hijacking and spoofing attacks
+    -- ROA (Route Origin Authorization): a cryptographic attestation in RPKI that explicitly authorizes an AS to originate specific IP prefixes, serving as the primary validation object for prefix filtering decisions
+    -- RPKI Validation States: Valid (ROA exists and matches), Invalid (ROA exists but doesn't match), or Unknown (no ROA found), with routers deciding whether to accept or reject routes based on these states
+- Packet Delivery and Fragmentation:
+    -- Packet Delivery: the process of forwarding data packets from source to destination across network hops using routing tables and forwarding decisions at each router
+    -- Fragmentation: the process of splitting large data packets (datagrams) into smaller pieces (fragments) so they can pass through network links with smaller Maximum Transmission Units (MTU).
+    -- Reassembly the process of recombining fragmented packets back into the original complete data packet at the destination after transmission through network links with smaller MTUs.
+- Time to Live: Prevention of loops and data corruption , with hops TTL decreases by one (No. of hops to reach a desired router or point).
+    -- Maximum Transmission Unit
+    -- Header fields
+- Internet Control Message Protocol:
+    -- ping  
+    -- traceroute
+- Firewall Traversal: Rules determining allowed traffic.
+- Network Segmentation and Isolation:
+    -- VLANs , subnets
+    -- security: Access Control
+    -- Traffic efficiency and monitoring 
+- Network Monitoring is important
+- Multiprotocol Label Switching: Combination of Layer 2 Speed + Layer 3 Routing Intelligence
+    -- Problem: In large Scale networks communication and speed forwarding
+    -- Solution: Labelling  networking and speed forwarding and sending them to Internet
+    -- Destination network->Next hop->Interface->Metric / cost + Routing Intelligence
+- Label Switching and Forwarding:
+    -- Label Stack - ID
+    -- Operations:
+    
+       Push: Add label at ingress routers(the entry point router in an MPLS domain that receives packets and adds labels to them)
+       Swap: Replace label at intermeddiate router
+       Pop: Remove labels at ingress router
+
+    - Components: 
+          - Label Switching Router: Label switching
+          - Label Edge router: Entry exit points , pop
+          - Provider Edge: Data sent from
+          - Customer Edge: Connection to Customer   
+    - Segment Routing:
+          - Create Encode path of all segment lists
+          - Segment Routing Multiprotocol Label Switching: Combination of Layer 2 speed,efficiency + Layer 3 Routing Intelligence
+               --  Linking encode path to the Multiprotocol Label Switching 
+          - Segment Routing v6 : IPv6+Segment Routing Multiprotocol Label Switching of IPv6
+    - How we are recieving data:
+          - Unicast: One-to-One delivery - Web request
+          - Broadcast: one-to-Many
+          -Multicast: Pub/Sub Model
+    
+
+- Transport Layer: TCP and UDP
+  -- TCP : 3 way Handshake SYN, SYN-ACK, FIN-ACK, Sequence Numbers , Acknowledgements, Sliding Window
+  -- Congestion Control: fast algorithm , fast recovery , prevent work load
+              - Slow Start 
+              - TCP Start
+  -- UDP : less headers more speed
+     -- 65535 Ports
+     -- Quality of Service Objectives:
+       --- DiffServ
+       --- IntServ
+  -- Virtual Private Network: data travels in encrypted and secured way , tunnelling
+        Anonimity,geo-unblocking
+        IP Security :Internet Suite Site-to-Site & Remote Access , Software next to internet Tunnels
+           -- key exchange in IPSec, Data is sent on packet headers, Encryption, UDP , Decrypt, Headers ESP
+  -- Secure Socket Layer: Cryptographic protocol for secure communication over internet , HTTPS
+    -- Handshake: Client and server authenticate each other and establish encryption keys
+    -- Certificates: X.509 digital certificates for server authentication and trust validation
+    -- Encryption: Symmetric encryption for data confidentiality and integrity in transit
+    -- Port 443: Default HTTPS port for encrypted web communication
+    -- TLS: Transport Layer Security (successor to SSL) , improved security and performance
+    -- Certificate Authority: third party entity that issues and verifies digital certificates
+    -- Public Key Infrastructure: manages digital certificates and public-private key pairs for authentication
+    -- Encryption and Decryption at admin and client sides
+- Transport Layer Security (TLS):
+    TLS is a cryptographic protocol that provides secure communication over a network.
+    It operates at the transport layer and ensures confidentiality, integrity, and 
+    authentication of data transmitted between clients and servers.
+    
+    Key Features:
+    - Encryption: Protects data from unauthorized access using symmetric and asymmetric encryption
+    - Authentication: Verifies the identity of both client and server using digital certificates
+    - Integrity: Ensures data is not tampered with during transmission using message authentication codes
+    - Perfect Forward Secrecy: Protects past communications even if long-term keys are compromised
+    
+    TLS Versions:
+    - TLS 1.2: Widely used, provides strong security with AES encryption
+    - TLS 1.3: Latest standard, improved performance and security, removed weak algorithms
+    
+    Common Use Cases:
+    - HTTPS: Secure web browsing (HTTP over TLS)
+    - SMTP/POP3/IMAP: Secure email communication
+    - VPN: Virtual Private Networks
+    - API Communication: Securing REST/GraphQL APIs
+    
+    TLS Handshake Process:
+    1. ClientHello: Client initiates connection with supported TLS versions and cipher suites
+    2. ServerHello: Server selects TLS version and cipher suite
+    3. Certificate Exchange: Server sends its digital certificate
+    4. Key Exchange: Client and server establish shared secret key
+    5. Finished: Both parties verify handshake integrity
+
+-- Tunnelling Flow with Encryption:
+         1. Packet generated by client.
+         2. Encrypted inside VPN tunnel(a wrapper within which Packet is being encrypted say).
+         3. Travels over Internet-> decrypted at VPN server.
+         4. Authenticity Integrity of source and destination.
+         5. Reaches destination safely
+
+- Data Centre Networking:
+Data Centre Networking:
+- Overview and Purpose:
+    -- Interconnection of servers, storage systems, and network devices within a physical location
+    -- High-speed, low-latency communication infrastructure
+    -- Supports cloud computing, virtualization, and distributed applications
+    -- Critical for business continuity and disaster recovery
+    -- Handles massive data volumes with redundancy and fault tolerance
+
+- Data Centre Architecture:
+    -- Three-Tier Architecture:
+        --- Core Layer: High-speed backbone connectivity, 100Gbps+ links
+        --- Aggregation Layer: Connects multiple switches, traffic consolidation
+        --- Access Layer: End-to-end connectivity to servers and storage
+    -- Spine-Leaf Architecture (Modern Standard):
+        --- Spine switches: Core layer providing redundant paths
+        --- Leaf switches: Access layer connecting to servers
+        --- Non-blocking fabric: Every server can communicate at full line rate
+        --- Equal-Cost Multi-Path routing for load balancing
+
+- Network Components:
+    -- Switches: Layer 2 and Layer 3 capable, ASIC-based forwarding, 25/40/100/400Gbps ports
+    -- Routers: Border routers connecting to internet and other data centres
+    -- Load Balancers: Distribute traffic across multiple servers
+    -- Firewalls: Stateful inspection and security policy enforcement
+    -- Network Interface Cards: High-speed adapters with offloading capabilities
+    -- Direct Attach Cables and Optical Fiber: High-speed interconnects
+
+- Virtualization and Overlay Networks:
+    -- Virtual Machines: Multiple OS instances on single physical server
+    -- Virtual Switching: vSwitch providing L2/L3 switching within hypervisors
+    -- Virtual Networks: VLAN trunking and segmentation
+    -- Overlay Networks: VxLAN and NVGRE for network virtualization
+        --- VxLAN: Encapsulation of Layer 2 frames over Layer 3 networks
+        --- NVGRE: Generic Routing Encapsulation for virtual networks
+    -- Software-Defined Networking: Centralized control plane, programmable data plane
+
+- Network Virtualization Technologies:
+    -- Network Function Virtualization: Running network functions as software instances
+    -- Service Function Chaining: Directing traffic through ordered network functions
+    -- SDN Controllers: Openflow-based centralized intelligence and policy management
+
+- IP Addressing and Subnetting:
+    -- IPv4 and IPv6 addressing schemes with careful planning
+    -- Private address space (RFC 1918): 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+    -- IPAM (IP Address Management): Centralized tracking and allocation
+    -- Host routing: Per-subnet or per-host routing decisions
+    -- Anycast routing: Multiple servers responding to same IP for load distribution
+
+- Redundancy and High Availability:
+    -- Active-Active configurations: All links and devices actively forwarding traffic
+    -- Link aggregation: Bonding multiple physical links for bandwidth and failover
+    -- Spanning Tree Protocol: Loop prevention in switched networks (rarely used in modern DCs)
+    -- Rapid Spanning Tree and Multiple Spanning Tree variants
+    -- First Hop Redundancy Protocol: VRRP, HSRP for default gateway redundancy
+    -- Sub-second failover mechanisms for critical services
+
+- Bandwidth Management and QoS:
+    -- Traffic Classification: Marking packets with DSCP or VLAN priority
+    -- Traffic Shaping: Rate limiting to prevent congestion
+    -- Queue Management: Priority queues for latency-sensitive traffic
+    -- Congestion Notification: Explicit Congestion Notification for TCP-friendly behavior
+    -- Bandwidth Reservation: Guaranteed minimum bandwidth for critical applications
+
+- Inter-Data Centre Networking:
+    -- WAN (Wide Area Network): Long-distance links between data centres
+    -- Metro Ethernet: Low-latency connectivity between nearby facilities
+    -- Private interconnections: Direct links avoiding public internet
+    -- Traffic prioritization: Critical data gets preferred treatment
+    -- Disaster recovery: Replication and failover across geographically diverse sites
+
+- Security in Data Centres:
+    -- Network segmentation: Separating critical systems with firewalls and ACLs
+    -- Microsegmentation: Per-application or per-service traffic control
+    -- DDoS mitigation: Scrubbing centres and rate limiting
+    -- Intrusion detection and prevention: Behavioral analysis and signature-based detection
+    -- Encryption: Data in transit using IPSec, TLS, and application-level encryption
+    -- Access controls: Role-based, attribute-based, and zero-trust architectures
+    -- Compliance: Meeting regulatory requirements (GDPR, HIPAA, PCI-DSS)
+
+- Monitoring and Observability:
+    -- NetFlow and sFlow: Traffic analysis and capacity planning
+    -- SNMP: Device monitoring and alerting
+    -- Packet capture: Deep packet inspection for troubleshooting
+    -- Telemetry: Real-time streaming of performance metrics
+    -- Alert thresholds: CPU, memory, bandwidth, latency tracking
+    -- Root cause analysis tools for incident response
+
+- Performance Optimization:
+    -- Latency minimization: Sub-microsecond switching delays
+    -- Jitter reduction: Consistent packet delivery timing
+    -- TCP optimization: Window scaling, selective acknowledgements
+    -- UDP prioritization: For streaming and real-time applications
+    -- Connection pooling: Reusing established connections
+    -- Anycast and GeoDNS: Routing users to nearest data centre
+
+- Scalability Considerations:
+    -- Modular design: Adding capacity without redesigning infrastructure
+    -- Horizontal scaling: Adding more servers instead of upgrading
+    -- Clos topology: Fat tree architecture for non-blocking expansion
+    -- Multi-fabric deployments: Isolated networks for different workloads
+    -- IPv6 addressing: Future-proofing address space
+
+- Emerging Technologies:
+    -- 400Gbps and beyond: Higher port speeds reducing switch count
+    -- Silicon photonics: Optical interconnects for reduced latency
+    -- In-network computing: Programmable switches with computational capability
+    -- AI-driven network optimization: Machine learning for traffic prediction
+    -- Intent-based networking: High-level policies automatically implemented
+
+- Operational Considerations:
+    -- Network automation: Configuration management and provisioning
+    -- GitOps: Infrastructure as code for network configuration
+    -- Blue-green deployments: Zero-downtime network updates
+    -- Canary testing: Gradual rollout of network changes
+    -- Runbooks: Documented procedures for common operations
+    -- War room protocols: Incident response procedures and communication
+
+- Cost Optimization:
+    -- Power efficiency: Network devices with low power consumption
+    -- Capacity utilization: Maximizing throughput per device
+    -- Vendor negotiations: Volume discounts and support contracts
+    -- Lifecycle management: Planning upgrades and decommissioning
+    -- Cloud vs. on-premises: Cost-benefit analysis
+
+- Spine-Leaf vs. Three-Tier Architecture:
+        -- Three-Tier Architecture:
+            --- Structure: Core -> Aggregation -> Access layers
+            --- Scalability: Limited by oversubscription ratios, typical 4:1 or higher
+            --- Latency: Predictable, but increases with traffic through aggregation layer
+            --- Cost: Lower initial investment for smaller deployments
+            --- Complexity: Simpler to understand and manage for small networks
+            --- Redundancy: Requires expensive core links, limited path diversity
+            --- Use Cases: Legacy data centers, smaller enterprises, non-performance-critical workloads
+            --- Oversubscription: Core links shared across multiple aggregation switches
+        -- Spine-Leaf Architecture:
+            --- Structure: Flat two-tier design, every leaf connects to every spine
+            --- Scalability: Non-blocking fabric, scales horizontally by adding more spines and leaves
+            --- Latency: Consistent, always two hops regardless of source/destination
+            --- Cost: Higher port density requirement, but better utilization
+            --- Complexity: Requires advanced routing (ECMP), more sophisticated management
+            --- Redundancy: Multiple equal-cost paths, improved fault tolerance
+            --- Use Cases: Hyperscale clouds, modern data centers, high-performance computing
+            --- Bandwidth: Full line-rate communication between any two servers
+        -- Comparison Summary:
+            --- Performance: Spine-Leaf provides consistent low latency; Three-Tier has variable latency
+            --- Scalability: Spine-Leaf scales better; Three-Tier hits bottlenecks at core
+            --- Cost: Three-Tier cheaper initially; Spine-Leaf better long-term ROI
+            --- Management: Three-Tier simpler; Spine-Leaf requires network automation
+            --- Migration: Organizations often upgrade from Three-Tier to Spine-Leaf as they grow
+    -- 
