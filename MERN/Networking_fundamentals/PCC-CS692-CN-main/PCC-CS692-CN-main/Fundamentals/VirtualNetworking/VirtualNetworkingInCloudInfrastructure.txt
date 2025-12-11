@@ -1,0 +1,54 @@
+Virtual Networks= Logical networks on Cloud Infrastructure.
+Components: Subnets, routes, tables, gateways.
+Allows multiple tenants to co-exist without interfering.
+
+Virtual Private Cloud / Virtual Network: 
+An isolated network environment within a cloud provider's infrastructure.
+Enables users to define custom IP address ranges (CIDR blocks), create subnets, 
+configure route tables, and manage network access through security groups and NACLs.
+Provides logical separation and security while leveraging shared physical infrastructure.
+Allows control over inbound/outbound traffic, DNS resolution, and internet connectivity.
+
+Subnets: 
+Subdivisions of a VPC that segment the network into smaller logical groups.
+Each subnet is associated with a specific availability zone and uses CIDR notation to define IP ranges.
+Subnets enable further isolation and control over resource placement and network traffic.
+Can be designated as public (with internet gateway access) or private (without direct internet exposure).
+Network ACLs and route tables control inbound/outbound traffic at the subnet level.
+
+
+Route Tables:
+Determine how network traffic is routed within and out of a VPC.
+Contains a set of rules (routes) that specify where traffic destined for specific IP address ranges should be directed.
+Each route defines a destination CIDR block and a target (e.g., internet gateway, NAT gateway, VPN gateway, VPC peering connection, or local).
+Every subnet must be associated with a route table that controls outbound traffic from that subnet.
+Main route table is automatically created with each VPC; custom route tables can be created for specific routing policies.
+Enables separation of public and private subnets through routing rules (e.g., public subnets route to internet gateway, private subnets route through NAT).
+Supports static and dynamic routing configurations for flexible network traffic management.
+
+
+Security Groups:
+ Instance-Level(VM/EC2/ENI level)
+ If we allow inbound, outbound is automatically allowed.
+
+Network Access Control Lists:
+  Subnet level 
+  Inbound rule ALONE is not enough
+
+Hybrid Connectivity:
+Enables secure communication between on-premises networks and cloud infrastructure.
+Common approaches include VPN connections (IPsec tunnels over the internet) and dedicated network connections (AWS Direct Connect, Azure ExpressRoute).
+VPN Gateway provides encrypted connectivity for site-to-site or client-to-site VPN connections.
+Dedicated connections offer higher bandwidth, lower latency, and consistent network performance compared to internet-based VPNs.
+Transit Gateway or similar services enable central management of hybrid and multi-cloud connectivity.
+Allows seamless integration of on-premises resources with cloud-based services while maintaining security.
+Essential for organizations migrating to cloud or maintaining multi-location architectures.
+
+VPN gateways:
+          VPN Gateway say for AWS
+          Virtual Private Gateway + Customer Gateway + Two-way IPSec tunnels
+          VPN Gateway(Azure)
+          Azure VPN gateway + Local Network Gateway
+          
+  
+    
