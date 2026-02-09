@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "nodemailer": "^7.0.9"
+    "events": "^3.3.0",
+    "nodemailer": "^7.0.9",
+    "uuid": "^13.0.0"
   }
 }
